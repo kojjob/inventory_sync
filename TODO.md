@@ -23,7 +23,7 @@
         - [x] Authentication (Access Token handling)
         - [x] `update_inventory/3` implementation
         - [x] `fetch_inventory/2` implementation
-    - [ ] Webhook Handler (Incoming updates from Shopify)
+    - [x] Webhook Handler (Incoming updates from Shopify)
 - [x] **Amazon Integration** (MVP)
     - [x] Implement `AmazonAdapter` Stub
     - [ ] Implement `AmazonAdapter` (SP-API)
