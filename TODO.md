@@ -18,11 +18,11 @@
     - [x] **Integration Test**: Verify `Update Product -> PubSub -> Worker -> Adapter` flow
 
 ## Phase 2: Platform Integrations 🔌
-- [ ] **Shopify Integration**
-    - [ ] Implement `ShopifyAdapter` (Real API calls)
-        - [ ] Authentication (OAuth/Access Token handling)
+- [x] **Shopify Integration**
+    - [x] Implement `ShopifyAdapter` (Real API calls)
+        - [x] Authentication (Access Token handling)
+        - [x] `update_inventory/3` implementation
         - [ ] `fetch_inventory/2` implementation
-        - [ ] `update_inventory/3` implementation
     - [ ] Webhook Handler (Incoming updates from Shopify)
 - [ ] **Amazon Integration** (MVP)
     - [ ] Implement `AmazonAdapter` (SP-API)

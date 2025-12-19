@@ -28,7 +28,8 @@ defmodule InventorySync.Workers.SyncIntegrationTest do
 
     # 4. Verify logs indicate success
     assert log =~ "Received sync_inventory for #{channel.name}"
-    assert log =~ "ShopifyAdapter: Updating #{inventory_item.platform_sku} to #{new_quantity}"
+    # Since we use MockAdapter in tests, we verify the ChannelServer success log
+    assert log =~ "Successfully synced SKU #{inventory_item.platform_sku} to #{channel.name}"
     
     # 5. Verify DB state
     updated_item = Inventory.get_inventory_item!(inventory_item.id)
