@@ -24,11 +24,13 @@
         - [x] `update_inventory/3` implementation
         - [x] `fetch_inventory/2` implementation
     - [ ] Webhook Handler (Incoming updates from Shopify)
-- [ ] **Amazon Integration** (MVP)
+- [x] **Amazon Integration** (MVP)
+    - [x] Implement `AmazonAdapter` Stub
     - [ ] Implement `AmazonAdapter` (SP-API)
         - [ ] Signing requests (AWS SigV4)
         - [ ] Feed API for inventory updates (async processing)
-- [ ] **Etsy Integration** (MVP)
+- [x] **Etsy Integration** (MVP)
+    - [x] Implement `EtsyAdapter` Stub
     - [ ] Implement `EtsyAdapter` (v3 API)
         - [ ] OAuth 2.0 flow
         - [ ] Inventory update endpoint
