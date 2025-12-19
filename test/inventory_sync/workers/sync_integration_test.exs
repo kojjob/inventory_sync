@@ -14,22 +14,23 @@ defmodule InventorySync.Workers.SyncIntegrationTest do
 
     # 2. Start ChannelServer
     {:ok, _pid} = SyncManager.start_channel(channel)
-    
+
     # 3. Update Product Quantity and capture logs
     new_quantity = 45
-    
+
     log = capture_log(fn ->
       {:ok, updated_product} = Inventory.update_product_quantity(product.id, new_quantity)
       assert updated_product.total_quantity == new_quantity
-      
+
       # Allow some time for the async PubSub -> GenServer -> Adapter flow
       Process.sleep(100)
     end)
 
     # 4. Verify logs indicate success
     assert log =~ "Received sync_inventory for #{channel.name}"
-    assert log =~ "ShopifyAdapter: Updating #{inventory_item.platform_sku} to #{new_quantity}"
-    
+    # Since we use MockAdapter in tests, we verify the ChannelServer success log
+    assert log =~ "Successfully synced SKU #{inventory_item.platform_sku} to #{channel.name}"
+
     # 5. Verify DB state
     updated_item = Inventory.get_inventory_item!(inventory_item.id)
     assert updated_item.quantity == new_quantity

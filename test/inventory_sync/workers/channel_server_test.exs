@@ -7,8 +7,9 @@ defmodule InventorySync.Workers.ChannelServerTest do
   import InventorySync.InventoryFixtures
 
   test "starts a channel server and updates inventory via mock adapter" do
+    # Use a platform that falls back to MockAdapter (via config)
     channel = channel_fixture(platform: :shopify)
-    
+
     # Start the server via SyncManager
     {:ok, pid} = SyncManager.start_channel(channel)
     assert Process.alive?(pid)
