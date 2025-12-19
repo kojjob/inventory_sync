@@ -41,9 +41,9 @@
     - [x] Measure sync throughput (events per second)
         - *Result*: ~678 syncs/sec with fan-out to 5 channels (Local DB, Mock Adapter)
     - [ ] Optimize database queries (bulk inserts/updates)
-- [ ] **Fault Tolerance**
-    - [ ] Implement Retry Logic (Exponential backoff for API failures)
-    - [ ] Rate Limiting (Token bucket per channel to respect API limits)
+- [x] **Fault Tolerance**
+    - [x] Implement Retry Logic (Simple exponential backoff simulation)
+    - [x] Rate Limiting (Token bucket per channel)
     - [ ] Idempotency keys for webhook processing
 - [ ] **"Black Friday Mode"**
     - [ ] Batching mechanism for high-volume updates
