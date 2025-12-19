@@ -2,7 +2,7 @@ defmodule InventorySync.Workers.ChannelServerTest do
   use InventorySync.DataCase
 
   alias InventorySync.Workers.{ChannelServer, SyncManager}
-  alias InventorySync.Inventory
+  # alias InventorySync.Inventory # Unused
 
   import InventorySync.InventoryFixtures
 
