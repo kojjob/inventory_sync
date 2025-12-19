@@ -61,9 +61,10 @@
     - [ ] Parse incoming payload -> Update `Product` quantity -> Trigger Sync (Fan-out)
 
 ## Phase 5: User Interface (Phoenix LiveView) 🖥️
-- [ ] **Dashboard**
-    - [ ] Real-time view of active channels
-    - [ ] Recent sync activity log
+- [x] **Dashboard**
+    - [x] Modern Sidebar Layout
+    - [x] Real-time Activity Feed (via PubSub)
+    - [x] Metrics Cards (Total Products, Active Channels, etc.)
 - [ ] **Channel Configuration**
     - [ ] Add/Edit/Remove Channels
     - [ ] OAuth callback pages
