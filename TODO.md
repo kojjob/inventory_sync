@@ -65,6 +65,10 @@
     - [x] Modern Sidebar Layout
     - [x] Real-time Activity Feed (via PubSub)
     - [x] Metrics Cards (Total Products, Active Channels, etc.)
+- [x] **Layout & Navigation**
+    - [x] Responsive Top Navbar (Replaced Sidebar)
+    - [x] Mobile Menu (Hamburger)
+    - [x] Profile Dropdown
 - [x] **Channel Configuration**
     - [x] Add Channel Form (Name, Platform, Credentials)
     - [x] List Active Channels
