@@ -65,8 +65,14 @@
     - [x] Modern Sidebar Layout
     - [x] Real-time Activity Feed (via PubSub)
     - [x] Metrics Cards (Total Products, Active Channels, etc.)
-- [ ] **Channel Configuration**
-    - [ ] Add/Edit/Remove Channels
+- [x] **Channel Configuration**
+    - [x] Add Channel Form (Name, Platform, Credentials)
+    - [x] List Active Channels
+    - [ ] Edit/Delete Channels
+- [x] **Products Management**
+    - [x] Products Table (LiveView Stream)
+    - [x] Inline Quantity Editing
+    - [ ] Add/Edit Product Details
     - [ ] OAuth callback pages
 - [ ] **Inventory Management**
     - [ ] Manual override of inventory levels
