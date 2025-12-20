@@ -81,4 +81,48 @@ defmodule InventorySync.Accounts.UserNotifier do
     ==============================
     """)
   end
+
+  @doc """
+  Deliver instructions to reset a user password.
+  """
+  def deliver_reset_password_instructions(user, url) do
+    deliver(user.email, "Reset password instructions", """
+
+    ==============================
+
+    Hi #{user.email},
+
+    You can reset your password by visiting the URL below:
+
+    #{url}
+
+    If you didn't request this change, please ignore this.
+
+    ==============================
+    """)
+  end
+
+  @doc """
+  Deliver team invitation to a user.
+  """
+  def deliver_team_invitation(email, url) do
+    deliver(email, "You've been invited to join InventorySync", """
+
+    ==============================
+
+    Hi #{email},
+
+    You've been invited to join a team on InventorySync!
+
+    To accept this invitation and create your account, visit the URL below:
+
+    #{url}
+
+    This invitation will expire in 7 days.
+
+    If you didn't expect this invitation, you can safely ignore this email.
+
+    ==============================
+    """)
+  end
 end

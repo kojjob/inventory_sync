@@ -273,12 +273,170 @@ defmodule InventorySync.Accounts do
     UserNotifier.deliver_login_instructions(user, magic_link_url_fun.(encoded_token))
   end
 
+  @doc ~S"""
+  Delivers the password reset instructions to the given user.
+
+  ## Examples
+
+      iex> deliver_user_reset_password_instructions(user, &url(~p"/users/reset-password/#{&1}"))
+      {:ok, %{to: ..., body: ...}}
+
+      iex> deliver_user_reset_password_instructions(confirmed_user, &url(~p"/users/reset-password/#{&1}"))
+      {:ok, %{to: ..., body: ...}}
+
+  """
+  def deliver_user_reset_password_instructions(%User{} = user, reset_password_url_fun)
+      when is_function(reset_password_url_fun, 1) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "reset_password")
+    Repo.insert!(user_token)
+    UserNotifier.deliver_reset_password_instructions(user, reset_password_url_fun.(encoded_token))
+  end
+
+  @doc """
+  Gets the user by reset password token.
+
+  ## Examples
+
+      iex> get_user_by_reset_password_token("validtoken")
+      %User{}
+
+      iex> get_user_by_reset_password_token("invalidtoken")
+      nil
+
+  """
+  def get_user_by_reset_password_token(token) do
+    with {:ok, query} <- UserToken.verify_reset_password_token_query(token),
+         %User{} = user <- Repo.one(query) do
+      user
+    else
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Resets the user password.
+
+  ## Examples
+
+      iex> reset_user_password(user, %{password: "new long password", password_confirmation: "new long password"})
+      {:ok, %User{}}
+
+      iex> reset_user_password(user, %{password: "valid", password_confirmation: "not the same"})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def reset_user_password(user, attrs) do
+    Repo.transact(fn ->
+      with {:ok, user} <- Repo.update(User.password_changeset(user, attrs)) do
+        Repo.delete_all(from(UserToken, where: [user_id: ^user.id, context: "reset_password"]))
+        {:ok, user}
+      end
+    end)
+  end
+
   @doc """
   Deletes the signed token with the given context.
   """
   def delete_user_session_token(token) do
     Repo.delete_all(from(UserToken, where: [token: ^token, context: "session"]))
     :ok
+  end
+
+  ## Team Invitation
+
+  alias InventorySync.Inventory.TeamMember
+
+  @doc ~S"""
+  Delivers the team invitation instructions to the given email.
+
+  ## Examples
+
+      iex> deliver_team_invitation("user@example.com", %{role: "member"}, inviting_user, &url(~p"/invitations/accept/#{&1}"))
+      {:ok, %{to: ..., body: ...}}
+
+  """
+  def deliver_team_invitation(email, attrs, %User{} = inviting_user, invitation_url_fun)
+      when is_binary(email) and is_function(invitation_url_fun, 1) do
+    # Build the invitation token
+    {encoded_token, user_token} = UserToken.build_invitation_token(email)
+
+    # Create the team member record with invited status
+    attrs = Map.merge(attrs, %{
+      "email" => email,
+      "invited_by_id" => inviting_user.id
+    })
+
+    case Repo.insert(user_token) do
+      {:ok, _token} ->
+        # Create team member invitation
+        case create_team_member_invitation(attrs) do
+          {:ok, team_member} ->
+            email_struct = UserNotifier.deliver_team_invitation(email, invitation_url_fun.(encoded_token))
+            {:ok, {team_member, email_struct}}
+
+          {:error, changeset} ->
+            {:error, changeset}
+        end
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  defp create_team_member_invitation(attrs) do
+    %TeamMember{}
+    |> TeamMember.invitation_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Gets the team member by invitation token.
+
+  ## Examples
+
+      iex> get_team_member_by_invitation_token("validtoken")
+      %TeamMember{}
+
+      iex> get_team_member_by_invitation_token("invalidtoken")
+      nil
+
+  """
+  def get_team_member_by_invitation_token(token) do
+    with {:ok, query} <- UserToken.verify_invitation_token_query(token),
+         %UserToken{sent_to: email} = token_record <- Repo.one(query),
+         %TeamMember{} = team_member <- Repo.get_by(TeamMember, email: email, status: "Invited") do
+      {team_member, token_record}
+    else
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Accepts the team invitation and links it to the user account.
+
+  ## Examples
+
+      iex> accept_team_invitation(team_member, user, %{name: "John Doe"})
+      {:ok, %TeamMember{}}
+
+      iex> accept_team_invitation(team_member, user, %{})
+      {:ok, %TeamMember{}}
+
+  """
+  def accept_team_invitation(%TeamMember{} = team_member, %User{} = user, attrs \\ %{}) do
+    Repo.transact(fn ->
+      with {:ok, team_member} <-
+             Repo.update(TeamMember.accept_invitation_changeset(team_member, user.id, attrs)) do
+        # Delete the invitation token
+        Repo.delete_all(
+          from(UserToken,
+            where: [sent_to: ^team_member.email, context: "invitation"]
+          )
+        )
+
+        {:ok, team_member}
+      end
+    end)
   end
 
   ## Token helper

@@ -9,8 +9,10 @@ defmodule InventorySync.Accounts.UserToken do
   # It is very important to keep the magic link token expiry short,
   # since someone with access to the email may take over the account.
   @magic_link_validity_in_minutes 15
+  @reset_password_validity_in_days 1
   @change_email_validity_in_days 7
   @session_validity_in_days 14
+  @invitation_validity_in_days 7
 
   schema "users_tokens" do
     field :token, :binary
@@ -142,6 +144,77 @@ defmodule InventorySync.Accounts.UserToken do
         query =
           from token in by_token_and_context_query(hashed_token, context),
             where: token.inserted_at > ago(@change_email_validity_in_days, "day")
+
+        {:ok, query}
+
+      :error ->
+        :error
+    end
+  end
+
+  @doc """
+  Checks if the token is valid and returns its underlying lookup query.
+
+  The query returns the user found by the token, if any.
+
+  The token is valid if it matches its hashed counterpart in the database
+  and it has not expired (after @reset_password_validity_in_days).
+  """
+  def verify_reset_password_token_query(token) do
+    case Base.url_decode64(token, padding: false) do
+      {:ok, decoded_token} ->
+        hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
+
+        query =
+          from token in by_token_and_context_query(hashed_token, "reset_password"),
+            join: user in assoc(token, :user),
+            where: token.inserted_at > ago(@reset_password_validity_in_days, "day"),
+            select: user
+
+        {:ok, query}
+
+      :error ->
+        :error
+    end
+  end
+
+  @doc """
+  Builds a token for team invitation emails.
+
+  The token is hashed and sent to the invited email address. The invitation
+  is not tied to an existing user (user_id will be nil) but stores the invited
+  email in sent_to field.
+  """
+  def build_invitation_token(invited_email) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    hashed_token = :crypto.hash(@hash_algorithm, token)
+
+    {Base.url_encode64(token, padding: false),
+     %UserToken{
+       token: hashed_token,
+       context: "invitation",
+       sent_to: invited_email,
+       user_id: nil
+     }}
+  end
+
+  @doc """
+  Checks if the invitation token is valid and returns its underlying lookup query.
+
+  The query returns the token record if found, with the invited email address.
+
+  The token is valid if it matches its hashed counterpart in the database
+  and it has not expired (after @invitation_validity_in_days).
+  """
+  def verify_invitation_token_query(token) do
+    case Base.url_decode64(token, padding: false) do
+      {:ok, decoded_token} ->
+        hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
+
+        query =
+          from token in by_token_and_context_query(hashed_token, "invitation"),
+            where: token.inserted_at > ago(@invitation_validity_in_days, "day"),
+            select: token
 
         {:ok, query}
 
