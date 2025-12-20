@@ -214,6 +214,22 @@ defmodule InventorySync.Inventory do
   end
 
   @doc """
+  Returns the list of inventory_items for a specific product with channels preloaded.
+
+  ## Examples
+
+      iex> list_inventory_items_for_product(product_id)
+      [%InventoryItem{}, ...]
+
+  """
+  def list_inventory_items_for_product(product_id) do
+    InventoryItem
+    |> where([i], i.product_id == ^product_id)
+    |> preload(:channel)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single inventory_item.
 
   Raises `Ecto.NoResultsError` if the Inventory item does not exist.
@@ -397,27 +413,27 @@ defmodule InventorySync.Inventory do
     end
   end
 
-  alias InventorySync.Inventory.User
+  alias InventorySync.Inventory.TeamMember
 
-  def list_users do
-    Repo.all(User)
+  def list_team_members do
+    Repo.all(TeamMember)
   end
 
-  def create_user(attrs) do
-    %User{}
-    |> User.changeset(attrs)
+  def create_team_member(attrs) do
+    %TeamMember{}
+    |> TeamMember.changeset(attrs)
     |> Repo.insert()
   end
 
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_team_member!(id), do: Repo.get!(TeamMember, id)
 
-  def update_user(%User{} = user, attrs) do
-    user
-    |> User.changeset(attrs)
+  def update_team_member(%TeamMember{} = team_member, attrs) do
+    team_member
+    |> TeamMember.changeset(attrs)
     |> Repo.update()
   end
 
-  def change_user(%User{} = user, attrs \\ %{}) do
-    User.changeset(user, attrs)
+  def change_team_member(%TeamMember{} = team_member, attrs \\ %{}) do
+    TeamMember.changeset(team_member, attrs)
   end
 end

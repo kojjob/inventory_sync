@@ -1,5 +1,8 @@
 import Config
 
+# Only in tests, remove the complexity from the password hashing algorithm
+config :bcrypt_elixir, :log_rounds, 1
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -12,6 +15,9 @@ config :inventory_sync, InventorySync.Repo,
   database: "inventory_sync_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
+
+# Configure encryption key for Cloak (test only - same as dev for simplicity)
+System.put_env("CLOAK_KEY", "J7EoUhAWJSCp4yCgA2VpG7j0wyXfiHPRuulYLE1nzOM=")
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
@@ -38,3 +44,6 @@ config :phoenix_live_view,
 
 # Use MockAdapter for ChannelServer tests
 config :inventory_sync, :use_mock_adapter, true
+
+# Configure Oban for testing (inline mode executes jobs synchronously)
+config :inventory_sync, Oban, testing: :inline

@@ -10,6 +10,9 @@ config :inventory_sync, InventorySync.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+# Configure encryption key for Cloak (dev only - use ENV vars in production)
+System.put_env("CLOAK_KEY", "J7EoUhAWJSCp4yCgA2VpG7j0wyXfiHPRuulYLE1nzOM=")
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

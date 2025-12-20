@@ -7,9 +7,28 @@
 # General application configuration
 import Config
 
+config :inventory_sync, :scopes,
+  user: [
+    default: true,
+    module: InventorySync.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :id,
+    schema_table: :users,
+    test_data_fixture: InventorySync.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_user
+  ]
+
 config :inventory_sync,
   ecto_repos: [InventorySync.Repo],
   generators: [timestamp_type: :utc_datetime]
+
+# Configure Cloak for field encryption
+config :inventory_sync, InventorySync.Vault,
+  ciphers: [
+    default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: :cloak_key_from_env}
+  ]
 
 # Configures the endpoint
 config :inventory_sync, InventorySyncWeb.Endpoint,
@@ -59,6 +78,12 @@ config :logger, :default_formatter,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+# Configure Oban for background job processing
+config :inventory_sync, Oban,
+  engine: Oban.Engines.Basic,
+  queues: [default: 10, webhooks: 20],
+  repo: InventorySync.Repo
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
