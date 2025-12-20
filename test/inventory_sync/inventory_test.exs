@@ -133,6 +133,31 @@ defmodule InventorySync.InventoryTest do
       assert Inventory.list_inventory_items() == [inventory_item]
     end
 
+    test "list_inventory_items_for_product/1 returns inventory items for a specific product with channels preloaded" do
+      product1 = product_fixture(sku: "PROD-001")
+      product2 = product_fixture(sku: "PROD-002")
+      channel1 = channel_fixture(name: "Shopify Store")
+      channel2 = channel_fixture(name: "Amazon Store")
+
+      # Create inventory items for product1
+      item1 = inventory_item_fixture(product_id: product1.id, channel_id: channel1.id, platform_sku: "SHOP-001")
+      item2 = inventory_item_fixture(product_id: product1.id, channel_id: channel2.id, platform_sku: "AMZN-001")
+
+      # Create inventory item for product2 (should not be returned)
+      _item3 = inventory_item_fixture(product_id: product2.id, channel_id: channel1.id, platform_sku: "SHOP-002")
+
+      items = Inventory.list_inventory_items_for_product(product1.id)
+
+      assert length(items) == 2
+      assert Enum.any?(items, fn item -> item.id == item1.id end)
+      assert Enum.any?(items, fn item -> item.id == item2.id end)
+
+      # Verify channels are preloaded
+      first_item = List.first(items)
+      assert Ecto.assoc_loaded?(first_item.channel)
+      assert first_item.channel.name in ["Shopify Store", "Amazon Store"]
+    end
+
     test "get_inventory_item!/1 returns the inventory_item with given id" do
       inventory_item = inventory_item_fixture()
       assert Inventory.get_inventory_item!(inventory_item.id) == inventory_item

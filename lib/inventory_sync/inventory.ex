@@ -214,6 +214,22 @@ defmodule InventorySync.Inventory do
   end
 
   @doc """
+  Returns the list of inventory_items for a specific product with channels preloaded.
+
+  ## Examples
+
+      iex> list_inventory_items_for_product(product_id)
+      [%InventoryItem{}, ...]
+
+  """
+  def list_inventory_items_for_product(product_id) do
+    InventoryItem
+    |> where([i], i.product_id == ^product_id)
+    |> preload(:channel)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single inventory_item.
 
   Raises `Ecto.NoResultsError` if the Inventory item does not exist.

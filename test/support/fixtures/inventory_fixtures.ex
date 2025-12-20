@@ -43,6 +43,11 @@ defmodule InventorySync.InventoryFixtures do
   end
 
   @doc """
+  Generate a unique external_id.
+  """
+  def unique_external_id, do: "external_id#{System.unique_integer([:positive])}"
+
+  @doc """
   Generate a inventory_item.
   """
   def inventory_item_fixture(attrs \\ %{}) do
@@ -52,7 +57,7 @@ defmodule InventorySync.InventoryFixtures do
     {:ok, inventory_item} =
       attrs
       |> Enum.into(%{
-        external_id: "some external_id",
+        external_id: unique_external_id(),
         platform_sku: "some platform_sku",
         quantity: 42,
         channel_id: channel.id,
