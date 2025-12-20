@@ -67,4 +67,20 @@ defmodule InventorySync.InventoryFixtures do
 
     inventory_item
   end
+
+  @doc """
+  Generate a team_member.
+  """
+  def team_member_fixture(attrs \\ %{}) do
+    {:ok, team_member} =
+      attrs
+      |> Enum.into(%{
+        name: "Team Member #{System.unique_integer([:positive])}",
+        email: "member#{System.unique_integer([:positive])}@example.com",
+        role: "viewer"
+      })
+      |> InventorySync.Inventory.create_team_member()
+
+    team_member
+  end
 end

@@ -115,8 +115,12 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
     - [x] ProductLive.Index tests (11 tests)
     - [x] ProductLive.Show tests (12 tests)
     - [x] All 23 Product Mapping tests passing
-- [ ] **Audit Logs** (Est: 2h)
-    - [ ] Track *who* changed a setting or invited a user
+- [x] **Audit Logs** (Est: 2h) ✅ **COMPLETED**
+    - [x] Track *who* changed a setting or invited a user
+    - [x] AuditLog schema with polymorphic resource tracking
+    - [x] Audit context with CRUD and query functions
+    - [x] Audit-aware wrapper functions for Channel, Product, TeamMember, Settings
+    - [x] 14 unit tests + 15 integration tests (all passing)
 
 ---
 
