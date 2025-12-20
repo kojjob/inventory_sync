@@ -51,8 +51,13 @@ defmodule InventorySync.InventoryFixtures do
   Generate a inventory_item.
   """
   def inventory_item_fixture(attrs \\ %{}) do
-    channel = attrs[:channel_id] && InventorySync.Inventory.get_channel!(attrs[:channel_id]) || channel_fixture()
-    product = attrs[:product_id] && InventorySync.Inventory.get_product!(attrs[:product_id]) || product_fixture()
+    channel =
+      (attrs[:channel_id] && InventorySync.Inventory.get_channel!(attrs[:channel_id])) ||
+        channel_fixture()
+
+    product =
+      (attrs[:product_id] && InventorySync.Inventory.get_product!(attrs[:product_id])) ||
+        product_fixture()
 
     {:ok, inventory_item} =
       attrs

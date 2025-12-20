@@ -86,7 +86,9 @@ defmodule InventorySyncWeb.Plugs.VerifyShopifySignature do
         |> halt()
       end
     else
-      Logger.error("Shopify webhook secret not configured! Set SHOPIFY_WEBHOOK_SECRET environment variable.")
+      Logger.error(
+        "Shopify webhook secret not configured! Set SHOPIFY_WEBHOOK_SECRET environment variable."
+      )
 
       conn
       |> put_resp_content_type("application/json")

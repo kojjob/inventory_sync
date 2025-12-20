@@ -113,12 +113,13 @@ defmodule InventorySyncWeb.UserResetPasswordControllerTest do
     end
 
     test "does not reset password with invalid token", %{conn: conn} do
-      conn = put(conn, ~p"/users/reset-password/invalid", %{
-        "user" => %{
-          "password" => "new valid password",
-          "password_confirmation" => "new valid password"
-        }
-      })
+      conn =
+        put(conn, ~p"/users/reset-password/invalid", %{
+          "user" => %{
+            "password" => "new valid password",
+            "password_confirmation" => "new valid password"
+          }
+        })
 
       assert redirected_to(conn) == ~p"/users/log-in"
 

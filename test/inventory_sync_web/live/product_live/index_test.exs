@@ -33,9 +33,10 @@ defmodule InventorySyncWeb.ProductLive.IndexTest do
     test "opens add product modal", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/products")
 
-      html = view
-             |> element("button", "Add Product")
-             |> render_click()
+      html =
+        view
+        |> element("button", "Add Product")
+        |> render_click()
 
       assert html =~ "Add New Product"
       assert html =~ "SKU"
@@ -50,9 +51,10 @@ defmodule InventorySyncWeb.ProductLive.IndexTest do
       view |> element("button", "Add Product") |> render_click()
 
       # Close modal
-      html = view
-             |> element("button", "Cancel")
-             |> render_click()
+      html =
+        view
+        |> element("button", "Cancel")
+        |> render_click()
 
       refute html =~ "Add New Product"
     end
@@ -64,15 +66,16 @@ defmodule InventorySyncWeb.ProductLive.IndexTest do
       view |> element("button", "Add Product") |> render_click()
 
       # Submit the form (use specific selector to avoid matching search form)
-      html = view
-             |> form("form[phx-submit='save-product']", %{
-               "product" => %{
-                 "sku" => "NEW-PRODUCT-SKU",
-                 "name" => "New Test Product",
-                 "total_quantity" => "50"
-               }
-             })
-             |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='save-product']", %{
+          "product" => %{
+            "sku" => "NEW-PRODUCT-SKU",
+            "name" => "New Test Product",
+            "total_quantity" => "50"
+          }
+        })
+        |> render_submit()
 
       assert html =~ "Product created successfully"
       assert html =~ "NEW-PRODUCT-SKU"
@@ -87,15 +90,16 @@ defmodule InventorySyncWeb.ProductLive.IndexTest do
       view |> element("button", "Add Product") |> render_click()
 
       # Submit empty form (use specific selector to avoid matching search form)
-      html = view
-             |> form("form[phx-submit='save-product']", %{
-               "product" => %{
-                 "sku" => "",
-                 "name" => "",
-                 "total_quantity" => ""
-               }
-             })
-             |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='save-product']", %{
+          "product" => %{
+            "sku" => "",
+            "name" => "",
+            "total_quantity" => ""
+          }
+        })
+        |> render_submit()
 
       # Modal should stay open with errors
       assert html =~ "Add New Product"
@@ -142,12 +146,13 @@ defmodule InventorySyncWeb.ProductLive.IndexTest do
       render_click(view, "edit-quantity", %{"id" => to_string(product.id)})
 
       # Submit new quantity
-      html = view
-             |> form("form[phx-submit='save-quantity']", %{
-               "product_id" => product.id,
-               "quantity" => "999"
-             })
-             |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='save-quantity']", %{
+          "product_id" => product.id,
+          "quantity" => "999"
+        })
+        |> render_submit()
 
       assert html =~ "Quantity updated successfully"
       assert html =~ "999"
@@ -177,15 +182,16 @@ defmodule InventorySyncWeb.ProductLive.IndexTest do
       view |> element("button", "Add Product") |> render_click()
 
       # Submit with duplicate SKU (use specific selector to avoid matching search form)
-      html = view
-             |> form("form[phx-submit='save-product']", %{
-               "product" => %{
-                 "sku" => "EXISTING-SKU",
-                 "name" => "Duplicate Product",
-                 "total_quantity" => "10"
-               }
-             })
-             |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='save-product']", %{
+          "product" => %{
+            "sku" => "EXISTING-SKU",
+            "name" => "Duplicate Product",
+            "total_quantity" => "10"
+          }
+        })
+        |> render_submit()
 
       # Modal should stay open with form (validation error)
       assert html =~ "Add New Product"

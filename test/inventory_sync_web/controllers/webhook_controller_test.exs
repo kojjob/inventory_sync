@@ -50,4 +50,3 @@ defmodule InventorySyncWeb.WebhookControllerTest do
     assert updated.total_quantity == 7
   end
 end
-

@@ -141,6 +141,7 @@ defmodule InventorySync.Audit do
   defp extract_resource_info(%Channel{id: id}), do: {"channel", id}
   defp extract_resource_info(%Product{id: id}), do: {"product", id}
   defp extract_resource_info(%TeamMember{id: id}), do: {"team_member", id}
+
   defp extract_resource_info(%{__struct__: module, id: id}) do
     type = module |> Module.split() |> List.last() |> Macro.underscore()
     {type, id}

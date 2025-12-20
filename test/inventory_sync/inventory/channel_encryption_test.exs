@@ -6,17 +6,19 @@ defmodule InventorySync.Inventory.ChannelEncryptionTest do
   describe "credential encryption" do
     test "encrypts and decrypts credentials correctly" do
       # Create credentials as JSON string (Cloak.Ecto.Binary casts to string)
-      credentials_json = Jason.encode!(%{
-        "api_key" => "test_secret_key_12345",
-        "shop_url" => "test-shop.myshopify.com"
-      })
+      credentials_json =
+        Jason.encode!(%{
+          "api_key" => "test_secret_key_12345",
+          "shop_url" => "test-shop.myshopify.com"
+        })
 
       # Create a channel with encrypted credentials
-      {:ok, channel} = Inventory.create_channel(%{
-        name: "Test Encrypted Channel",
-        platform: :shopify,
-        credentials: credentials_json
-      })
+      {:ok, channel} =
+        Inventory.create_channel(%{
+          name: "Test Encrypted Channel",
+          platform: :shopify,
+          credentials: credentials_json
+        })
 
       assert channel.id
       assert channel.credentials == credentials_json
@@ -33,11 +35,12 @@ defmodule InventorySync.Inventory.ChannelEncryptionTest do
     end
 
     test "handles nil credentials" do
-      {:ok, channel} = Inventory.create_channel(%{
-        name: "Channel Without Credentials",
-        platform: :shopify,
-        credentials: nil
-      })
+      {:ok, channel} =
+        Inventory.create_channel(%{
+          name: "Channel Without Credentials",
+          platform: :shopify,
+          credentials: nil
+        })
 
       assert channel.credentials == nil
 
@@ -48,17 +51,19 @@ defmodule InventorySync.Inventory.ChannelEncryptionTest do
     test "credentials are actually encrypted in database" do
       credentials_json = Jason.encode!(%{"api_key" => "secret123"})
 
-      {:ok, channel} = Inventory.create_channel(%{
-        name: "Test Channel",
-        platform: :shopify,
-        credentials: credentials_json
-      })
+      {:ok, channel} =
+        Inventory.create_channel(%{
+          name: "Test Channel",
+          platform: :shopify,
+          credentials: credentials_json
+        })
 
       # Query raw database to verify encryption
-      result = Repo.query!(
-        "SELECT credentials FROM channels WHERE id = $1",
-        [channel.id]
-      )
+      result =
+        Repo.query!(
+          "SELECT credentials FROM channels WHERE id = $1",
+          [channel.id]
+        )
 
       [[encrypted_binary]] = result.rows
 

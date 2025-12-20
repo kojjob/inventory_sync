@@ -21,7 +21,12 @@ defmodule InventorySync.InventoryTest do
     end
 
     test "create_channel/1 with valid data creates a channel" do
-      valid_attrs = %{active: true, name: "some name", credentials: Jason.encode!(%{}), platform: :shopify}
+      valid_attrs = %{
+        active: true,
+        name: "some name",
+        credentials: Jason.encode!(%{}),
+        platform: :shopify
+      }
 
       assert {:ok, %Channel{} = channel} = Inventory.create_channel(valid_attrs)
       assert channel.active == true
@@ -36,7 +41,13 @@ defmodule InventorySync.InventoryTest do
 
     test "update_channel/2 with valid data updates the channel" do
       channel = channel_fixture()
-      update_attrs = %{active: false, name: "some updated name", credentials: Jason.encode!(%{}), platform: :amazon}
+
+      update_attrs = %{
+        active: false,
+        name: "some updated name",
+        credentials: Jason.encode!(%{}),
+        platform: :amazon
+      }
 
       assert {:ok, %Channel{} = channel} = Inventory.update_channel(channel, update_attrs)
       assert channel.active == false
@@ -140,11 +151,27 @@ defmodule InventorySync.InventoryTest do
       channel2 = channel_fixture(name: "Amazon Store")
 
       # Create inventory items for product1
-      item1 = inventory_item_fixture(product_id: product1.id, channel_id: channel1.id, platform_sku: "SHOP-001")
-      item2 = inventory_item_fixture(product_id: product1.id, channel_id: channel2.id, platform_sku: "AMZN-001")
+      item1 =
+        inventory_item_fixture(
+          product_id: product1.id,
+          channel_id: channel1.id,
+          platform_sku: "SHOP-001"
+        )
+
+      item2 =
+        inventory_item_fixture(
+          product_id: product1.id,
+          channel_id: channel2.id,
+          platform_sku: "AMZN-001"
+        )
 
       # Create inventory item for product2 (should not be returned)
-      _item3 = inventory_item_fixture(product_id: product2.id, channel_id: channel1.id, platform_sku: "SHOP-002")
+      _item3 =
+        inventory_item_fixture(
+          product_id: product2.id,
+          channel_id: channel1.id,
+          platform_sku: "SHOP-002"
+        )
 
       items = Inventory.list_inventory_items_for_product(product1.id)
 
@@ -166,9 +193,18 @@ defmodule InventorySync.InventoryTest do
     test "create_inventory_item/1 with valid data creates a inventory_item" do
       channel = channel_fixture()
       product = product_fixture()
-      valid_attrs = %{external_id: "some external_id", platform_sku: "some platform_sku", quantity: 42, channel_id: channel.id, product_id: product.id}
 
-      assert {:ok, %InventoryItem{} = inventory_item} = Inventory.create_inventory_item(valid_attrs)
+      valid_attrs = %{
+        external_id: "some external_id",
+        platform_sku: "some platform_sku",
+        quantity: 42,
+        channel_id: channel.id,
+        product_id: product.id
+      }
+
+      assert {:ok, %InventoryItem{} = inventory_item} =
+               Inventory.create_inventory_item(valid_attrs)
+
       assert inventory_item.external_id == "some external_id"
       assert inventory_item.platform_sku == "some platform_sku"
       assert inventory_item.quantity == 42
@@ -180,9 +216,16 @@ defmodule InventorySync.InventoryTest do
 
     test "update_inventory_item/2 with valid data updates the inventory_item" do
       inventory_item = inventory_item_fixture()
-      update_attrs = %{external_id: "some updated external_id", platform_sku: "some updated platform_sku", quantity: 43}
 
-      assert {:ok, %InventoryItem{} = inventory_item} = Inventory.update_inventory_item(inventory_item, update_attrs)
+      update_attrs = %{
+        external_id: "some updated external_id",
+        platform_sku: "some updated platform_sku",
+        quantity: 43
+      }
+
+      assert {:ok, %InventoryItem{} = inventory_item} =
+               Inventory.update_inventory_item(inventory_item, update_attrs)
+
       assert inventory_item.external_id == "some updated external_id"
       assert inventory_item.platform_sku == "some updated platform_sku"
       assert inventory_item.quantity == 43
@@ -190,7 +233,10 @@ defmodule InventorySync.InventoryTest do
 
     test "update_inventory_item/2 with invalid data returns error changeset" do
       inventory_item = inventory_item_fixture()
-      assert {:error, %Ecto.Changeset{}} = Inventory.update_inventory_item(inventory_item, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Inventory.update_inventory_item(inventory_item, @invalid_attrs)
+
       assert inventory_item == Inventory.get_inventory_item!(inventory_item.id)
     end
 

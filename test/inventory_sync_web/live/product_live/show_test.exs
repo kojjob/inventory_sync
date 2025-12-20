@@ -49,9 +49,10 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
     test "opens add mapping modal", %{conn: conn, product: product} do
       {:ok, view, _html} = live(conn, ~p"/products/#{product.id}")
 
-      html = view
-             |> element("button", "Add Channel Mapping")
-             |> render_click()
+      html =
+        view
+        |> element("button", "Add Channel Mapping")
+        |> render_click()
 
       assert html =~ "Add Channel Mapping"
       assert html =~ "Link this product to a sales channel"
@@ -65,9 +66,10 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
       view |> element("button", "Add Channel Mapping") |> render_click()
 
       # Close modal
-      html = view
-             |> element("button", "Cancel")
-             |> render_click()
+      html =
+        view
+        |> element("button", "Cancel")
+        |> render_click()
 
       refute html =~ "Link this product to a sales channel"
     end
@@ -79,13 +81,14 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
       view |> element("button", "Add Channel Mapping") |> render_click()
 
       # Submit the form (use specific phx-submit selector to avoid matching search form)
-      html = view
-             |> form("form[phx-submit='add-mapping']", %{
-               "channel_id" => channel.id,
-               "platform_sku" => "NEW-SKU-123",
-               "quantity" => "75"
-             })
-             |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='add-mapping']", %{
+          "channel_id" => channel.id,
+          "platform_sku" => "NEW-SKU-123",
+          "quantity" => "75"
+        })
+        |> render_submit()
 
       assert html =~ "Channel mapping added successfully"
       assert html =~ channel.name
@@ -94,18 +97,20 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
     end
 
     test "enters edit mode for a mapping", %{conn: conn, product: product, channel: channel} do
-      inventory_item = inventory_item_fixture(%{
-        product_id: product.id,
-        channel_id: channel.id,
-        platform_sku: "EDIT-SKU",
-        quantity: 25
-      })
+      inventory_item =
+        inventory_item_fixture(%{
+          product_id: product.id,
+          channel_id: channel.id,
+          platform_sku: "EDIT-SKU",
+          quantity: 25
+        })
 
       {:ok, view, _html} = live(conn, ~p"/products/#{product.id}")
 
-      html = view
-             |> element("button[phx-click='edit-mapping'][phx-value-id='#{inventory_item.id}']")
-             |> render_click()
+      html =
+        view
+        |> element("button[phx-click='edit-mapping'][phx-value-id='#{inventory_item.id}']")
+        |> render_click()
 
       # Should show form inputs with current values
       assert html =~ "value=\"EDIT-SKU\""
@@ -115,12 +120,13 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
     end
 
     test "cancels edit mode", %{conn: conn, product: product, channel: channel} do
-      inventory_item = inventory_item_fixture(%{
-        product_id: product.id,
-        channel_id: channel.id,
-        platform_sku: "CANCEL-SKU",
-        quantity: 30
-      })
+      inventory_item =
+        inventory_item_fixture(%{
+          product_id: product.id,
+          channel_id: channel.id,
+          platform_sku: "CANCEL-SKU",
+          quantity: 30
+        })
 
       {:ok, view, _html} = live(conn, ~p"/products/#{product.id}")
 
@@ -130,9 +136,10 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
       |> render_click()
 
       # Cancel edit
-      html = view
-             |> element("button[phx-click='cancel-edit']")
-             |> render_click()
+      html =
+        view
+        |> element("button[phx-click='cancel-edit']")
+        |> render_click()
 
       # Should show regular display again (no form inputs)
       refute html =~ "value=\"CANCEL-SKU\""
@@ -140,12 +147,13 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
     end
 
     test "saves edited mapping", %{conn: conn, product: product, channel: channel} do
-      inventory_item = inventory_item_fixture(%{
-        product_id: product.id,
-        channel_id: channel.id,
-        platform_sku: "OLD-SKU",
-        quantity: 10
-      })
+      inventory_item =
+        inventory_item_fixture(%{
+          product_id: product.id,
+          channel_id: channel.id,
+          platform_sku: "OLD-SKU",
+          quantity: 10
+        })
 
       {:ok, view, _html} = live(conn, ~p"/products/#{product.id}")
 
@@ -155,13 +163,14 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
       |> render_click()
 
       # Submit the edit form
-      html = view
-             |> form("form[phx-submit='save-mapping']", %{
-               "item_id" => inventory_item.id,
-               "platform_sku" => "UPDATED-SKU",
-               "quantity" => "999"
-             })
-             |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='save-mapping']", %{
+          "item_id" => inventory_item.id,
+          "platform_sku" => "UPDATED-SKU",
+          "quantity" => "999"
+        })
+        |> render_submit()
 
       assert html =~ "Mapping updated successfully"
       assert html =~ "UPDATED-SKU"
@@ -170,12 +179,13 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
     end
 
     test "deletes a channel mapping", %{conn: conn, product: product, channel: channel} do
-      inventory_item = inventory_item_fixture(%{
-        product_id: product.id,
-        channel_id: channel.id,
-        platform_sku: "DELETE-ME",
-        quantity: 5
-      })
+      inventory_item =
+        inventory_item_fixture(%{
+          product_id: product.id,
+          channel_id: channel.id,
+          platform_sku: "DELETE-ME",
+          quantity: 5
+        })
 
       {:ok, view, _html} = live(conn, ~p"/products/#{product.id}")
 
@@ -183,15 +193,20 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
       assert render(view) =~ "DELETE-ME"
 
       # Delete the mapping
-      html = view
-             |> element("button[phx-click='delete-mapping'][phx-value-id='#{inventory_item.id}']")
-             |> render_click()
+      html =
+        view
+        |> element("button[phx-click='delete-mapping'][phx-value-id='#{inventory_item.id}']")
+        |> render_click()
 
       assert html =~ "Channel mapping removed"
       refute html =~ "DELETE-ME"
     end
 
-    test "shows only unmapped channels in add modal", %{conn: conn, product: product, channel: channel} do
+    test "shows only unmapped channels in add modal", %{
+      conn: conn,
+      product: product,
+      channel: channel
+    } do
       # Create a second channel
       channel2 = channel_fixture(%{name: "Amazon Store", platform: :amazon})
 
@@ -206,9 +221,10 @@ defmodule InventorySyncWeb.ProductLive.ShowTest do
       {:ok, view, _html} = live(conn, ~p"/products/#{product.id}")
 
       # Open modal
-      html = view
-             |> element("button", "Add Channel Mapping")
-             |> render_click()
+      html =
+        view
+        |> element("button", "Add Channel Mapping")
+        |> render_click()
 
       # Should show unmapped channel, not the mapped one
       assert html =~ channel2.name

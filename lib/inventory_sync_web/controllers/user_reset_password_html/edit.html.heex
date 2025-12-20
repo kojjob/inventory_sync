@@ -1,0 +1,102 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 lg:px-8 py-12">
+  <div class="w-full max-w-md">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-block p-4 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mb-4">
+        <.icon name="hero-shield-check" class="w-12 h-12 text-white" />
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Set new password</h2>
+      <p class="text-gray-600 dark:text-gray-400">
+        Choose a strong password for {@user.email}
+      </p>
+    </div>
+    
+<!-- Main Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-2xl">
+      <div class="p-8">
+        <.form
+          :let={f}
+          for={@changeset}
+          action={~p"/users/reset-password/#{@token}"}
+          class="space-y-5"
+        >
+          
+<!-- Password Field -->
+          <div>
+            <label
+              for={f[:password].id}
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              New password
+            </label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                <.icon name="hero-lock-closed" class="h-5 w-5 text-gray-400" />
+              </div>
+              <.input
+                field={f[:password]}
+                type="password"
+                autocomplete="new-password"
+                required
+                phx-mounted={JS.focus()}
+                class="block w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+                placeholder="Enter new password"
+              />
+            </div>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Must be at least 12 characters long
+            </p>
+          </div>
+          
+<!-- Password Confirmation Field -->
+          <div>
+            <label
+              for={f[:password_confirmation].id}
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Confirm new password
+            </label>
+            <div class="relative rounded-xl shadow-sm">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                <.icon name="hero-lock-closed" class="h-5 w-5 text-gray-400" />
+              </div>
+              <.input
+                field={f[:password_confirmation]}
+                type="password"
+                autocomplete="new-password"
+                required
+                class="block w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+                placeholder="Confirm new password"
+              />
+            </div>
+          </div>
+          
+<!-- Submit Button -->
+          <div>
+            <.button
+              type="submit"
+              class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 transform hover:scale-105"
+            >
+              <.icon name="hero-check-circle" class="w-5 h-5 mr-2" /> Reset password
+            </.button>
+          </div>
+        </.form>
+      </div>
+      
+<!-- Footer -->
+      <div class="px-8 py-6 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-center text-sm">
+          <.link
+            navigate={~p"/users/log-in"}
+            class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium transition-colors flex items-center group"
+          >
+            <.icon
+              name="hero-arrow-left"
+              class="w-4 h-4 mr-1.5 group-hover:-translate-x-0.5 transition-transform"
+            /> Back to login
+          </.link>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

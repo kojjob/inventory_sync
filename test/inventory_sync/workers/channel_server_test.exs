@@ -30,6 +30,7 @@ defmodule InventorySync.Workers.ChannelServerTest do
     inventory_item = inventory_item_fixture(channel_id: channel.id, product_id: product.id)
 
     # Call update_inventory
-    assert {:ok, %{status: "updated"}} = ChannelServer.update_inventory(channel.id, inventory_item, 10)
+    assert {:ok, %{status: "updated"}} =
+             ChannelServer.update_inventory(channel.id, inventory_item, 10)
   end
 end

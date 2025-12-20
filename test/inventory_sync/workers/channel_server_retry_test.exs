@@ -38,17 +38,28 @@ defmodule InventorySync.Workers.ChannelServerRetryTest do
     test "calculates correct delays for each retry" do
       # Verify the mathematical formula: 2^retry_count * 1000ms, capped at 5 minutes
       expected_delays = [
-        {0, 1_000},    # 2^0 * 1000 = 1 second
-        {1, 2_000},    # 2^1 * 1000 = 2 seconds
-        {2, 4_000},    # 2^2 * 1000 = 4 seconds
-        {3, 8_000},    # 2^3 * 1000 = 8 seconds
-        {4, 16_000},   # 2^4 * 1000 = 16 seconds
-        {5, 32_000},   # 2^5 * 1000 = 32 seconds
-        {6, 64_000},   # 2^6 * 1000 = 64 seconds
-        {7, 128_000},  # 2^7 * 1000 = 128 seconds
-        {8, 256_000},  # 2^8 * 1000 = 256 seconds
-        {9, 300_000},  # 2^9 * 1000 = 512 seconds, capped at 300 seconds (5 minutes)
-        {10, 300_000}  # 2^10 * 1000 = 1024 seconds, capped at 300 seconds
+        # 2^0 * 1000 = 1 second
+        {0, 1_000},
+        # 2^1 * 1000 = 2 seconds
+        {1, 2_000},
+        # 2^2 * 1000 = 4 seconds
+        {2, 4_000},
+        # 2^3 * 1000 = 8 seconds
+        {3, 8_000},
+        # 2^4 * 1000 = 16 seconds
+        {4, 16_000},
+        # 2^5 * 1000 = 32 seconds
+        {5, 32_000},
+        # 2^6 * 1000 = 64 seconds
+        {6, 64_000},
+        # 2^7 * 1000 = 128 seconds
+        {7, 128_000},
+        # 2^8 * 1000 = 256 seconds
+        {8, 256_000},
+        # 2^9 * 1000 = 512 seconds, capped at 300 seconds (5 minutes)
+        {9, 300_000},
+        # 2^10 * 1000 = 1024 seconds, capped at 300 seconds
+        {10, 300_000}
       ]
 
       Enum.each(expected_delays, fn {retry_count, expected} ->
@@ -75,7 +86,11 @@ defmodule InventorySync.Workers.ChannelServerRetryTest do
   describe "retry behavior with mock adapter" do
     test "retries on server errors (5xx)", %{channel: channel, item: item} do
       # Send sync message via PubSub
-      Phoenix.PubSub.broadcast(InventorySync.PubSub, "channel:#{channel.id}", {:sync_inventory, item, 0})
+      Phoenix.PubSub.broadcast(
+        InventorySync.PubSub,
+        "channel:#{channel.id}",
+        {:sync_inventory, item, 0}
+      )
 
       # Wait for processing
       Process.sleep(100)
@@ -89,7 +104,12 @@ defmodule InventorySync.Workers.ChannelServerRetryTest do
     end
 
     test "does not retry on client errors (4xx)", %{channel: channel, item: item} do
-      Phoenix.PubSub.broadcast(InventorySync.PubSub, "channel:#{channel.id}", {:sync_inventory, item, 0})
+      Phoenix.PubSub.broadcast(
+        InventorySync.PubSub,
+        "channel:#{channel.id}",
+        {:sync_inventory, item, 0}
+      )
+
       Process.sleep(100)
 
       # With MockAdapter always succeeding, this test verifies the happy path
@@ -215,7 +235,11 @@ defmodule InventorySync.Workers.ChannelServerRetryTest do
   describe "sync history tracking" do
     test "successful sync creates success history record", %{channel: channel, item: item} do
       # Send sync message via PubSub
-      Phoenix.PubSub.broadcast(InventorySync.PubSub, "channel:#{channel.id}", {:sync_inventory, item, 0})
+      Phoenix.PubSub.broadcast(
+        InventorySync.PubSub,
+        "channel:#{channel.id}",
+        {:sync_inventory, item, 0}
+      )
 
       # Wait for processing
       Process.sleep(100)
@@ -236,7 +260,11 @@ defmodule InventorySync.Workers.ChannelServerRetryTest do
   describe "backward compatibility" do
     test "handles messages without retry_count parameter", %{channel: channel, item: item} do
       # Send old-style message without retry_count via PubSub
-      Phoenix.PubSub.broadcast(InventorySync.PubSub, "channel:#{channel.id}", {:sync_inventory, item})
+      Phoenix.PubSub.broadcast(
+        InventorySync.PubSub,
+        "channel:#{channel.id}",
+        {:sync_inventory, item}
+      )
 
       # Wait for processing
       Process.sleep(100)
@@ -248,7 +276,11 @@ defmodule InventorySync.Workers.ChannelServerRetryTest do
 
     test "new-style messages with retry_count work correctly", %{channel: channel, item: item} do
       # Send new-style message with explicit retry_count via PubSub
-      Phoenix.PubSub.broadcast(InventorySync.PubSub, "channel:#{channel.id}", {:sync_inventory, item, 0})
+      Phoenix.PubSub.broadcast(
+        InventorySync.PubSub,
+        "channel:#{channel.id}",
+        {:sync_inventory, item, 0}
+      )
 
       # Wait for processing
       Process.sleep(100)

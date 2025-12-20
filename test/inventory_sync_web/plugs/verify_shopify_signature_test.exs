@@ -183,11 +183,12 @@ defmodule InventorySyncWeb.Plugs.VerifyShopifySignatureTest do
 
     test "handles large payload" do
       # Create a larger JSON payload
-      large_body = Jason.encode!(%{
-        product_id: "123",
-        quantity: 100,
-        inventory_levels: Enum.map(1..100, fn i -> %{location_id: i, available: i * 10} end)
-      })
+      large_body =
+        Jason.encode!(%{
+          product_id: "123",
+          quantity: 100,
+          inventory_levels: Enum.map(1..100, fn i -> %{location_id: i, available: i * 10} end)
+        })
 
       signature = generate_hmac(large_body, @webhook_secret)
 

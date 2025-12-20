@@ -1,19 +1,26 @@
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4 sm:p-6 lg:p-8">
   <div class="w-full max-w-6xl">
     <!-- Development Notice -->
-    <div :if={local_mail_adapter?()} class="mb-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 p-4 backdrop-blur-sm">
+    <div
+      :if={local_mail_adapter?()}
+      class="mb-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 p-4 backdrop-blur-sm"
+    >
       <div class="flex gap-3">
         <.icon name="hero-information-circle" class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
         <div class="text-sm text-blue-200">
           <p class="font-medium mb-1">Development Mode</p>
           <p class="text-blue-300">
-            Check <.link href="/dev/mailbox" class="underline font-medium hover:text-blue-100">the mailbox</.link> for login links.
+            Check
+            <.link href="/dev/mailbox" class="underline font-medium hover:text-blue-100">
+              the mailbox
+            </.link>
+            for login links.
           </p>
         </div>
       </div>
     </div>
-
-    <!-- Main Split Panel -->
+    
+<!-- Main Split Panel -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden grid lg:grid-cols-2">
       <!-- Left Panel - Form -->
       <div class="p-8 sm:p-12 lg:p-16">
@@ -24,8 +31,8 @@
           </div>
           <h1 class="text-2xl font-bold text-gray-900">InventorySync</h1>
         </div>
-
-        <!-- Welcome Text -->
+        
+<!-- Welcome Text -->
         <div class="mb-8">
           <%= if @current_scope do %>
             <h2 class="text-3xl font-bold text-gray-900 mb-2">Reauthenticate</h2>
@@ -35,8 +42,8 @@
             <p id="auth-subtitle" class="text-gray-500">We Are Happy To See You Again</p>
           <% end %>
         </div>
-
-        <!-- Tab Navigation -->
+        
+<!-- Tab Navigation -->
         <div class="flex gap-2 mb-8">
           <button
             id="signin-tab"
@@ -53,147 +60,181 @@
             Sign Up
           </button>
         </div>
-
-        <!-- Sign In Form -->
+        
+<!-- Sign In Form -->
         <div id="signin-form" style="display: block;">
-        <.form :let={f} for={@form} as={:user} id="login_form" action={~p"/users/log-in"} class="space-y-5">
-          <!-- Email Input -->
-          <div>
-            <div class="relative">
-              <.input
-                readonly={!!@current_scope}
-                field={f[:email]}
-                type="email"
-                autocomplete="email"
-                required
-                phx-mounted={JS.focus()}
-                class="block w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter your email"
-              />
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                <.icon name="hero-envelope" class="h-5 w-5 text-gray-400" />
+          <.form
+            :let={f}
+            for={@form}
+            as={:user}
+            id="login_form"
+            action={~p"/users/log-in"}
+            class="space-y-5"
+          >
+            <!-- Email Input -->
+            <div>
+              <div class="relative">
+                <.input
+                  readonly={!!@current_scope}
+                  field={f[:email]}
+                  type="email"
+                  autocomplete="email"
+                  required
+                  phx-mounted={JS.focus()}
+                  class="block w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter your email"
+                />
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <.icon name="hero-envelope" class="h-5 w-5 text-gray-400" />
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Password Input -->
-          <div>
-            <div class="relative">
-              <.input
-                field={f[:password]}
-                type="password"
-                autocomplete="current-password"
-                class="block w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter your password"
-              />
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                <.icon name="hero-eye-slash" class="h-5 w-5 text-gray-400" />
+            
+<!-- Password Input -->
+            <div>
+              <div class="relative">
+                <.input
+                  field={f[:password]}
+                  type="password"
+                  autocomplete="current-password"
+                  class="block w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter your password"
+                />
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <.icon name="hero-eye-slash" class="h-5 w-5 text-gray-400" />
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Remember Me & Forgot Password -->
-          <div class="flex items-center justify-between">
-            <label class="flex items-center cursor-pointer group">
-              <input
-                type="checkbox"
-                name={f[:remember_me].name}
-                value="true"
-                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-              />
-              <span class="ml-2 text-sm text-gray-600 group-hover:text-gray-900 transition-colors">
-                Remember me
-              </span>
-            </label>
-            <%= if false do %>
-              <.link href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
-                Forgot Password?
-              </.link>
-            <% end %>
-          </div>
-
-          <!-- Login Button -->
-          <button
-            type="submit"
-            name={f[:remember_me].name}
-            value="true"
-            class="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Login
-          </button>
-        </.form>
-
-        <!-- Divider -->
-        <div class="relative my-8">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-200"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-4 bg-white text-gray-400 font-medium">
-              OR
-            </span>
-          </div>
-        </div>
-
-        <!-- Social Login Buttons -->
-        <div class="space-y-3">
-          <button
-            type="button"
-            disabled
-            class="w-full px-6 py-3.5 bg-black text-white font-medium rounded-xl flex items-center justify-center gap-3 opacity-50 cursor-not-allowed transition-all"
-          >
-            <.icon name="hero-device-phone-mobile" class="w-5 h-5" />
-            Log in with Apple
-          </button>
-          <button
-            type="button"
-            disabled
-            class="w-full px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-xl flex items-center justify-center gap-3 opacity-50 cursor-not-allowed transition-all"
-          >
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Log in with Google
-          </button>
-        </div>
-
-        <!-- Magic Link Alternative (Hidden) -->
-        <details class="mt-8">
-          <summary class="text-sm text-gray-500 hover:text-gray-700 cursor-pointer font-medium">
-            Prefer passwordless login?
-          </summary>
-          <.form :let={f} for={@form} as={:user} id="login_form_magic" action={~p"/users/log-in"} class="mt-4 space-y-4">
-            <div class="relative">
-              <.input
-                readonly={!!@current_scope}
-                field={f[:email]}
-                type="email"
-                autocomplete="email"
-                required
-                class="block w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter your email"
-              />
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                <.icon name="hero-envelope" class="h-5 w-5 text-gray-400" />
-              </div>
+            
+<!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between">
+              <label class="flex items-center cursor-pointer group">
+                <input
+                  type="checkbox"
+                  name={f[:remember_me].name}
+                  value="true"
+                  class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                />
+                <span class="ml-2 text-sm text-gray-600 group-hover:text-gray-900 transition-colors">
+                  Remember me
+                </span>
+              </label>
+              <%= if false do %>
+                <.link
+                  href="#"
+                  class="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                >
+                  Forgot Password?
+                </.link>
+              <% end %>
             </div>
+            
+<!-- Login Button -->
             <button
               type="submit"
-              class="w-full px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+              name={f[:remember_me].name}
+              value="true"
+              class="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Send Magic Link
-              <.icon name="hero-paper-airplane" class="w-4 h-4" />
+              Login
             </button>
           </.form>
-        </details>
+          
+<!-- Divider -->
+          <div class="relative my-8">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-white text-gray-400 font-medium">
+                OR
+              </span>
+            </div>
+          </div>
+          
+<!-- Social Login Buttons -->
+          <div class="space-y-3">
+            <button
+              type="button"
+              disabled
+              class="w-full px-6 py-3.5 bg-black text-white font-medium rounded-xl flex items-center justify-center gap-3 opacity-50 cursor-not-allowed transition-all"
+            >
+              <.icon name="hero-device-phone-mobile" class="w-5 h-5" /> Log in with Apple
+            </button>
+            <button
+              type="button"
+              disabled
+              class="w-full px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-xl flex items-center justify-center gap-3 opacity-50 cursor-not-allowed transition-all"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Log in with Google
+            </button>
+          </div>
+          
+<!-- Magic Link Alternative (Hidden) -->
+          <details class="mt-8">
+            <summary class="text-sm text-gray-500 hover:text-gray-700 cursor-pointer font-medium">
+              Prefer passwordless login?
+            </summary>
+            <.form
+              :let={f}
+              for={@form}
+              as={:user}
+              id="login_form_magic"
+              action={~p"/users/log-in"}
+              class="mt-4 space-y-4"
+            >
+              <div class="relative">
+                <.input
+                  readonly={!!@current_scope}
+                  field={f[:email]}
+                  type="email"
+                  autocomplete="email"
+                  required
+                  class="block w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter your email"
+                />
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <.icon name="hero-envelope" class="h-5 w-5 text-gray-400" />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                Send Magic Link <.icon name="hero-paper-airplane" class="w-4 h-4" />
+              </button>
+            </.form>
+          </details>
         </div>
-
-        <!-- Sign Up Form -->
+        
+<!-- Sign Up Form -->
         <div id="signup-form" style="display: none;">
-          <.form :let={f} for={@form} as={:user} id="registration_form" action={~p"/users/register"} class="space-y-5">
+          <.form
+            :let={f}
+            for={@form}
+            as={:user}
+            id="registration_form"
+            action={~p"/users/register"}
+            class="space-y-5"
+          >
             <!-- Email Input -->
             <div>
               <div class="relative">
@@ -214,8 +255,8 @@
                 We'll send you a magic link to verify your email
               </p>
             </div>
-
-            <!-- Password Input -->
+            
+<!-- Password Input -->
             <div>
               <div class="relative">
                 <.input
@@ -233,8 +274,8 @@
                 Or use magic link authentication for password-less login
               </p>
             </div>
-
-            <!-- Terms Agreement -->
+            
+<!-- Terms Agreement -->
             <div class="rounded-xl bg-gray-50 p-4 border border-gray-200">
               <p class="text-xs text-gray-600 leading-relaxed">
                 By creating an account, you agree to our
@@ -247,8 +288,8 @@
                 </a>
               </p>
             </div>
-
-            <!-- Submit Button -->
+            
+<!-- Submit Button -->
             <button
               type="submit"
               phx-disable-with="Creating account..."
@@ -257,8 +298,8 @@
               Create Account
             </button>
           </.form>
-
-          <!-- Features List -->
+          
+<!-- Features List -->
           <div class="mt-8 pt-6 border-t border-gray-200">
             <p class="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">
               What you'll get
@@ -286,44 +327,64 @@
           </div>
         </div>
       </div>
-
-      <!-- Right Panel - Gradient Artwork -->
+      
+<!-- Right Panel - Gradient Artwork -->
       <div class="hidden lg:flex relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 overflow-hidden">
         <!-- Animated Gradient Overlay -->
         <div class="absolute inset-0 opacity-30">
-          <div class="absolute inset-0 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 animate-pulse"></div>
-          <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-          <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 animate-pulse">
+          </div>
+          <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob">
+          </div>
+          <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000">
+          </div>
+          <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000">
+          </div>
         </div>
-
-        <!-- Wave Pattern SVG -->
-        <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+        
+<!-- Wave Pattern SVG -->
+        <svg
+          class="absolute inset-0 w-full h-full opacity-20"
+          viewBox="0 0 1200 800"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
             <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
               <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
             </linearGradient>
           </defs>
-          <path d="M0,400 Q300,200 600,400 T1200,400 L1200,800 L0,800 Z" fill="url(#wave-gradient)" opacity="0.3">
-            <animate attributeName="d"
+          <path
+            d="M0,400 Q300,200 600,400 T1200,400 L1200,800 L0,800 Z"
+            fill="url(#wave-gradient)"
+            opacity="0.3"
+          >
+            <animate
+              attributeName="d"
               dur="10s"
               repeatCount="indefinite"
               values="M0,400 Q300,200 600,400 T1200,400 L1200,800 L0,800 Z;
                       M0,400 Q300,600 600,400 T1200,400 L1200,800 L0,800 Z;
-                      M0,400 Q300,200 600,400 T1200,400 L1200,800 L0,800 Z"/>
+                      M0,400 Q300,200 600,400 T1200,400 L1200,800 L0,800 Z"
+            />
           </path>
-          <path d="M0,500 Q300,300 600,500 T1200,500 L1200,800 L0,800 Z" fill="url(#wave-gradient)" opacity="0.2">
-            <animate attributeName="d"
+          <path
+            d="M0,500 Q300,300 600,500 T1200,500 L1200,800 L0,800 Z"
+            fill="url(#wave-gradient)"
+            opacity="0.2"
+          >
+            <animate
+              attributeName="d"
               dur="8s"
               repeatCount="indefinite"
               values="M0,500 Q300,300 600,500 T1200,500 L1200,800 L0,800 Z;
                       M0,500 Q300,700 600,500 T1200,500 L1200,800 L0,800 Z;
-                      M0,500 Q300,300 600,500 T1200,500 L1200,800 L0,800 Z"/>
+                      M0,500 Q300,300 600,500 T1200,500 L1200,800 L0,800 Z"
+            />
           </path>
         </svg>
-
-        <!-- Content -->
+        
+<!-- Content -->
         <div class="relative z-10 flex flex-col justify-end p-12 text-white">
           <div class="max-w-md">
             <h3 class="text-3xl font-bold mb-4 drop-shadow-lg">
@@ -333,8 +394,8 @@
               Real-time synchronization for Shopify, Etsy, Amazon, and more. Manage your multi-channel inventory from one powerful platform.
             </p>
           </div>
-
-          <!-- Copyright Footer -->
+          
+<!-- Copyright Footer -->
           <div class="mt-auto pt-8 border-t border-white/20">
             <p class="text-sm text-blue-100">
               © 2024 InventorySync. All rights reserved.

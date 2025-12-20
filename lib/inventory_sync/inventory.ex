@@ -482,7 +482,12 @@ defmodule InventorySync.Inventory do
 
   def count_errors_today do
     today_start = DateTime.utc_now() |> DateTime.to_date() |> DateTime.new!(~T[00:00:00])
-    Repo.one(from s in SyncHistory, where: s.timestamp >= ^today_start and s.status == "error", select: count(s.id))
+
+    Repo.one(
+      from s in SyncHistory,
+        where: s.timestamp >= ^today_start and s.status == "error",
+        select: count(s.id)
+    )
   end
 
   @doc """
@@ -496,14 +501,16 @@ defmodule InventorySync.Inventory do
     |> Ecto.Multi.update(:product, Product.changeset(product, %{total_quantity: new_quantity}))
     |> Ecto.Multi.run(:inventory_items, fn repo, _ ->
       # 2. Get all linked inventory items
-      items = repo.all(from i in InventoryItem, where: i.product_id == ^product.id, preload: [:channel])
+      items =
+        repo.all(from i in InventoryItem, where: i.product_id == ^product.id, preload: [:channel])
 
       # 3. Update their local quantities (optional, depending on business logic if we want to mirror quantity exactly)
       # For now let's assume we mirror the total quantity to all channels
-      {_count, _updated_items} = repo.update_all(
-        from(i in InventoryItem, where: i.product_id == ^product.id, select: i),
-        set: [quantity: new_quantity, updated_at: DateTime.utc_now()]
-      )
+      {_count, _updated_items} =
+        repo.update_all(
+          from(i in InventoryItem, where: i.product_id == ^product.id, select: i),
+          set: [quantity: new_quantity, updated_at: DateTime.utc_now()]
+        )
 
       # Since update_all doesn't return preloads, we might need to reload or just use the IDs from `items`
       # A better approach for the broadcast step is to iterate over `items`
@@ -522,9 +529,11 @@ defmodule InventorySync.Inventory do
             {:sync_inventory, %{item | quantity: new_quantity}}
           )
         end)
+
         {:ok, product}
 
-      error -> error
+      error ->
+        error
     end
   end
 
@@ -696,6 +705,7 @@ defmodule InventorySync.Inventory do
           changes: %{key => changes},
           user_id: user.id
         })
+
         {:ok, setting}
 
       error ->

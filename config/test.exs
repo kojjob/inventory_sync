@@ -8,13 +8,29 @@ config :bcrypt_elixir, :log_rounds, 1
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :inventory_sync, InventorySync.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "inventory_sync_test#{System.get_env("MIX_TEST_PARTITION")}",
-  pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2
+#
+# DATABASE_URL can be used in CI environments (GitHub Actions, etc.)
+database_url = System.get_env("DATABASE_URL")
+
+database_config =
+  if database_url do
+    [url: database_url]
+  else
+    [
+      username: "postgres",
+      password: "postgres",
+      hostname: "localhost",
+      database: "inventory_sync_test#{System.get_env("MIX_TEST_PARTITION")}"
+    ]
+  end
+
+config :inventory_sync,
+       InventorySync.Repo,
+       database_config ++
+         [
+           pool: Ecto.Adapters.SQL.Sandbox,
+           pool_size: System.schedulers_online() * 2
+         ]
 
 # Configure encryption key for Cloak (test only - same as dev for simplicity)
 System.put_env("CLOAK_KEY", "J7EoUhAWJSCp4yCgA2VpG7j0wyXfiHPRuulYLE1nzOM=")

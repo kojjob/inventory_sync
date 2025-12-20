@@ -12,6 +12,7 @@ defmodule InventorySync.Integrations.ShopifyAdapterTest do
     port = bypass.port
     # We use http://localhost:port as the shop_url to match Bypass
     shop_url = "http://localhost:#{port}"
+
     credentials = %{
       "shop_url" => shop_url,
       "access_token" => "secret-token",
@@ -36,7 +37,8 @@ defmodule InventorySync.Integrations.ShopifyAdapterTest do
       assert decoded_body["available"] == 50
 
       # Verify Headers
-      assert List.keyfind(conn.req_headers, "x-shopify-access-token", 0) == {"x-shopify-access-token", "secret-token"}
+      assert List.keyfind(conn.req_headers, "x-shopify-access-token", 0) ==
+               {"x-shopify-access-token", "secret-token"}
 
       Plug.Conn.resp(conn, 200, Jason.encode!(%{inventory_level: %{available: 50}}))
     end)
@@ -49,6 +51,7 @@ defmodule InventorySync.Integrations.ShopifyAdapterTest do
     # 1. Setup Data
     port = bypass.port
     shop_url = "http://localhost:#{port}"
+
     credentials = %{
       "shop_url" => shop_url,
       "access_token" => "secret-token",
@@ -69,7 +72,8 @@ defmodule InventorySync.Integrations.ShopifyAdapterTest do
       assert conn.query_params["inventory_item_ids"] == "item_456"
 
       # Verify Headers
-      assert List.keyfind(conn.req_headers, "x-shopify-access-token", 0) == {"x-shopify-access-token", "secret-token"}
+      assert List.keyfind(conn.req_headers, "x-shopify-access-token", 0) ==
+               {"x-shopify-access-token", "secret-token"}
 
       response_body = %{
         inventory_levels: [
