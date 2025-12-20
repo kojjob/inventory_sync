@@ -108,6 +108,17 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
     - [x] Team invitation emails verified (5 tests passing)
     - [x] Production configuration documented in config/runtime.exs
 
+### P1.5: DevOps (Should Have)
+- [ ] **CI/CD Pipeline** (Est: 2h) ⏳ **IN PROGRESS**
+    - [x] Created `.github/workflows/ci.yml` with comprehensive pipeline
+    - [x] Test job: PostgreSQL service, format check, compile, tests
+    - [x] Security job: dependency audit, hex.audit
+    - [x] Assets job: build verification
+    - [x] Configured `config/test.exs` for DATABASE_URL support
+    - [ ] **BLOCKED**: GitHub Actions requires spending limit > $0 for private repos
+    - [ ] Fix: Go to GitHub Settings → Billing → Actions → Set limit to $1+
+    - [ ] Verify CI runs green after billing fix
+
 ### P2: Enhancements (Nice to Have)
 - [x] **Product Mapping** (Est: 5h) ✅ **COMPLETED**
     - [x] UI to link different SKUs across channels
