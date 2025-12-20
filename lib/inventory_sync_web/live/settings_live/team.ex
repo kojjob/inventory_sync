@@ -1,5 +1,6 @@
 defmodule InventorySyncWeb.SettingsLive.Team do
   use InventorySyncWeb, :live_view
+  alias InventorySync.Accounts
   alias InventorySync.Inventory
   alias InventorySync.Inventory.TeamMember
 
@@ -57,7 +58,13 @@ defmodule InventorySyncWeb.SettingsLive.Team do
                       </td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{user.title}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">
-                        <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{user.status}</span>
+                        <span class={[
+                          "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset",
+                          if(user.status == "Invited",
+                            do: "bg-yellow-50 text-yellow-700 ring-yellow-600/20",
+                            else: "bg-green-50 text-green-700 ring-green-600/20"
+                          )
+                        ]}>{user.status}</span>
                       </td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{user.role}</td>
                       <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
@@ -79,10 +86,12 @@ defmodule InventorySyncWeb.SettingsLive.Team do
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4"><%= if @editing_user, do: "Edit User", else: "Add New User" %></h3>
 
             <.form for={@form} phx-submit="save" as={:team_member} class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
-                <.input field={@form[:name]} type="text" class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600" required />
-              </div>
+              <%= if @editing_user do %>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                  <.input field={@form[:name]} type="text" class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600" required />
+                </div>
+              <% end %>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
@@ -104,7 +113,7 @@ defmodule InventorySyncWeb.SettingsLive.Team do
                   Cancel
                 </button>
                 <button type="submit" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors">
-                  <%= if @editing_user, do: "Save Changes", else: "Add User" %>
+                  <%= if @editing_user, do: "Save Changes", else: "Send Invitation" %>
                 </button>
               </div>
             </.form>
@@ -142,15 +151,21 @@ defmodule InventorySyncWeb.SettingsLive.Team do
   end
 
   defp save_team_member(socket, nil, team_member_params) do
-    team_member_params = Map.put(team_member_params, "status", "Active")
+    current_user = socket.assigns.current_scope.user
+    email = team_member_params["email"]
 
-    case Inventory.create_team_member(team_member_params) do
-      {:ok, team_member} ->
+    # Generate invitation URL
+    invitation_url_fun = fn token ->
+      url(~p"/invitations/accept/#{token}")
+    end
+
+    case Accounts.deliver_team_invitation(email, team_member_params, current_user, invitation_url_fun) do
+      {:ok, {team_member, _email}} ->
         {:noreply,
          socket
          |> assign(:show_modal, false)
          |> stream_insert(:users, team_member)
-         |> put_flash(:info, "Team member created successfully")}
+         |> put_flash(:info, "Invitation sent to #{email}")}
 
       {:error, changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}

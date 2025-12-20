@@ -16,6 +16,9 @@ config :inventory_sync, InventorySync.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
+# Configure encryption key for Cloak (test only - same as dev for simplicity)
+System.put_env("CLOAK_KEY", "J7EoUhAWJSCp4yCgA2VpG7j0wyXfiHPRuulYLE1nzOM=")
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :inventory_sync, InventorySyncWeb.Endpoint,
@@ -41,3 +44,6 @@ config :phoenix_live_view,
 
 # Use MockAdapter for ChannelServer tests
 config :inventory_sync, :use_mock_adapter, true
+
+# Configure Oban for testing (inline mode executes jobs synchronously)
+config :inventory_sync, Oban, testing: :inline

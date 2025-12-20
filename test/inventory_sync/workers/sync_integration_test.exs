@@ -6,6 +6,17 @@ defmodule InventorySync.Workers.SyncIntegrationTest do
   alias InventorySync.Inventory
   import InventorySync.InventoryFixtures
 
+  setup do
+    # Ensure MockAdapter is used for tests
+    Application.put_env(:inventory_sync, :use_mock_adapter, true)
+
+    on_exit(fn ->
+      Application.delete_env(:inventory_sync, :use_mock_adapter)
+    end)
+
+    :ok
+  end
+
   test "updating product quantity triggers channel sync" do
     # 1. Setup Data
     channel = channel_fixture(platform: :shopify)

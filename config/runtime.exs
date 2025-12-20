@@ -20,6 +20,11 @@ if System.get_env("PHX_SERVER") do
   config :inventory_sync, InventorySyncWeb.Endpoint, server: true
 end
 
+# Shopify webhook secret for HMAC signature verification
+# Generate this in your Shopify admin when creating the webhook
+# Set via environment variable: SHOPIFY_WEBHOOK_SECRET
+config :inventory_sync, :shopify_webhook_secret, System.get_env("SHOPIFY_WEBHOOK_SECRET")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

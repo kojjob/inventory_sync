@@ -394,4 +394,183 @@ defmodule InventorySync.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "deliver_team_invitation/4" do
+    setup do
+      inviting_user = user_fixture()
+      email = unique_user_email()
+      team_member_params = %{"email" => email, "role" => "Admin", "title" => "Manager"}
+      %{inviting_user: inviting_user, email: email, team_member_params: team_member_params}
+    end
+
+    test "creates team member with Invited status", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+      invitation_url_fun = fn _token -> "http://example.com/invitations/accept/token" end
+
+      {:ok, {team_member, _email}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, invitation_url_fun)
+
+      assert team_member.email == email
+      assert team_member.role == "Admin"
+      assert team_member.title == "Manager"
+      assert team_member.status == "Invited"
+      assert is_nil(team_member.user_id)
+    end
+
+    test "creates invitation token", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+      # Extract token from email
+      token =
+        extract_user_token(fn url ->
+          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          email_struct
+        end)
+
+      {:ok, token_binary} = Base.url_decode64(token, padding: false)
+      hashed_token = :crypto.hash(:sha256, token_binary)
+
+      assert user_token = Repo.get_by(UserToken, token: hashed_token)
+      assert user_token.context == "invitation"
+      assert user_token.sent_to == email
+    end
+
+    test "sends invitation email", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+      token =
+        extract_user_token(fn url ->
+          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          email_struct
+        end)
+
+      assert token
+    end
+
+    test "returns error for invalid email", %{inviting_user: inviting_user, team_member_params: team_member_params} do
+      invalid_params = Map.put(team_member_params, "email", "invalid")
+      invitation_url_fun = fn _token -> "http://example.com/invitations/accept/token" end
+
+      {:error, changeset} = Accounts.deliver_team_invitation("invalid", invalid_params, inviting_user, invitation_url_fun)
+
+      assert %{email: ["must be a valid email"]} = errors_on(changeset)
+    end
+
+    test "returns error for duplicate email", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+      invitation_url_fun = fn _token -> "http://example.com/invitations/accept/token" end
+
+      # Create first invitation
+      {:ok, {_team_member, _email}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, invitation_url_fun)
+
+      # Try to create duplicate
+      {:error, changeset} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, invitation_url_fun)
+
+      assert "has already been taken" in errors_on(changeset).email
+    end
+  end
+
+  describe "get_team_member_by_invitation_token/1" do
+    setup do
+      inviting_user = user_fixture()
+      email = unique_user_email()
+      team_member_params = %{"email" => email, "role" => "Admin"}
+
+      token =
+        extract_user_token(fn url ->
+          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          email_struct
+        end)
+
+      %{token: token, email: email}
+    end
+
+    test "returns team member and token record for valid token", %{token: token, email: email} do
+      assert {team_member, token_record} = Accounts.get_team_member_by_invitation_token(token)
+      assert team_member.email == email
+      assert team_member.status == "Invited"
+      assert token_record.context == "invitation"
+    end
+
+    test "does not return team member for invalid token" do
+      refute Accounts.get_team_member_by_invitation_token("oops")
+    end
+
+    test "does not return team member for expired token", %{token: token} do
+      # Update all tokens to be expired (8 days old)
+      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+
+      refute Accounts.get_team_member_by_invitation_token(token)
+    end
+
+    test "does not return team member if already accepted", %{token: token} do
+      # Accept the invitation
+      {team_member, _token_record} = Accounts.get_team_member_by_invitation_token(token)
+      user = user_fixture()
+      {:ok, _updated_team_member} = Accounts.accept_team_invitation(team_member, user, %{})
+
+      # Token should be deleted after acceptance
+      refute Accounts.get_team_member_by_invitation_token(token)
+    end
+  end
+
+  describe "accept_team_invitation/3" do
+    setup do
+      inviting_user = user_fixture()
+      email = unique_user_email()
+      team_member_params = %{"email" => email, "role" => "Editor", "title" => "Developer"}
+
+      token =
+        extract_user_token(fn url ->
+          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          email_struct
+        end)
+
+      {team_member, _token_record} = Accounts.get_team_member_by_invitation_token(token)
+      accepting_user = user_fixture()
+
+      %{team_member: team_member, accepting_user: accepting_user, token: token}
+    end
+
+    test "links user to team member", %{team_member: team_member, accepting_user: accepting_user} do
+      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+
+      assert updated_team_member.user_id == accepting_user.id
+    end
+
+    test "updates status to Active", %{team_member: team_member, accepting_user: accepting_user} do
+      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+
+      assert updated_team_member.status == "Active"
+    end
+
+    test "updates name if provided", %{team_member: team_member, accepting_user: accepting_user} do
+      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{"name" => "John Doe"})
+
+      assert updated_team_member.name == "John Doe"
+    end
+
+    test "deletes invitation token", %{team_member: team_member, accepting_user: accepting_user, token: token} do
+      {:ok, _updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+
+      # Token should be deleted
+      refute Accounts.get_team_member_by_invitation_token(token)
+
+      # Verify no tokens exist for this team member
+      {:ok, token_binary} = Base.url_decode64(token, padding: false)
+      hashed_token = :crypto.hash(:sha256, token_binary)
+      refute Repo.get_by(UserToken, token: hashed_token)
+    end
+
+    test "returns error if team member already has a user", %{team_member: team_member, accepting_user: accepting_user} do
+      # Accept invitation first time
+      {:ok, accepted_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+
+      # Try to accept again with different user (using the updated team_member with user_id set)
+      another_user = user_fixture()
+      {:error, changeset} = Accounts.accept_team_invitation(accepted_team_member, another_user, %{})
+
+      assert "has already been accepted" in errors_on(changeset).user_id
+    end
+
+    test "preserves role and title from invitation", %{team_member: team_member, accepting_user: accepting_user} do
+      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+
+      assert updated_team_member.role == "Editor"
+      assert updated_team_member.title == "Developer"
+    end
+  end
 end

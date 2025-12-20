@@ -12,7 +12,7 @@ defmodule InventorySync.InventoryFixtures do
       attrs
       |> Enum.into(%{
         active: true,
-        credentials: %{},
+        credentials: Jason.encode!(%{}),
         name: "some name",
         platform: :shopify
       })
