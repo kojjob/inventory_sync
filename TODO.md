@@ -133,6 +133,8 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
     - [x] Health check endpoint (`/health`, `/health/live`, `/health/ready`)
     - [x] Docker Compose for local testing
     - [x] .dockerignore to minimize build context
+    - [x] Release module for production migrations
+    - [x] Docker build + container verified working
     - [x] 233 tests passing
 
 ### P2: Enhancements (Nice to Have)
