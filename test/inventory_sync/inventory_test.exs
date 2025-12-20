@@ -21,12 +21,12 @@ defmodule InventorySync.InventoryTest do
     end
 
     test "create_channel/1 with valid data creates a channel" do
-      valid_attrs = %{active: true, name: "some name", credentials: %{}, platform: :shopify}
+      valid_attrs = %{active: true, name: "some name", credentials: Jason.encode!(%{}), platform: :shopify}
 
       assert {:ok, %Channel{} = channel} = Inventory.create_channel(valid_attrs)
       assert channel.active == true
       assert channel.name == "some name"
-      assert channel.credentials == %{}
+      assert channel.credentials == Jason.encode!(%{})
       assert channel.platform == :shopify
     end
 
@@ -36,12 +36,12 @@ defmodule InventorySync.InventoryTest do
 
     test "update_channel/2 with valid data updates the channel" do
       channel = channel_fixture()
-      update_attrs = %{active: false, name: "some updated name", credentials: %{}, platform: :amazon}
+      update_attrs = %{active: false, name: "some updated name", credentials: Jason.encode!(%{}), platform: :amazon}
 
       assert {:ok, %Channel{} = channel} = Inventory.update_channel(channel, update_attrs)
       assert channel.active == false
       assert channel.name == "some updated name"
-      assert channel.credentials == %{}
+      assert channel.credentials == Jason.encode!(%{})
       assert channel.platform == :amazon
     end
 

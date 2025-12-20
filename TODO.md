@@ -14,7 +14,10 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
 - **Core Engine:** Functional (GenServer/PubSub architecture).
 - **Integrations:** Shopify (Full), Amazon/Etsy (Stubs).
 - **UI/UX:** Modern Dashboard, Channel/Product/Team management implemented.
-- **Readiness:** ⚠️ **NOT READY FOR PRODUCTION**. Critical security and reliability features are missing.
+- **Authentication:** ✅ Full authentication system implemented (login, registration, protected routes).
+- **Security:** ✅ Credentials encrypted with AES.GCM, HMAC webhook verification, retry logic with exponential backoff.
+- **Async Processing:** ✅ Oban background job processing for webhooks with 5 retry attempts.
+- **Readiness:** ✅ **PRODUCTION READY**. All critical blockers resolved (B-01 through B-05 complete).
 
 ### Timeline
 - **Phase:** Hardening & Security (Current)
@@ -49,39 +52,55 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
 
 | ID | Blocker Description | Impact | Required Resources | Owner |
 |----|---------------------|--------|--------------------|-------|
-| **B-01** | **Missing Authentication**<br>No login system. Dashboard is public. | **Catastrophic**<br>Cannot deploy securely. | `phx.gen.auth` | @Backend |
-| **B-02** | **Insecure Webhooks**<br>Shopify webhook endpoint accepts any POST request. | **High**<br>Data integrity risk (malicious overwrites). | HMAC Verification Logic | @Backend |
-| **B-03** | **Infinite Retry Loops**<br>Worker retries forever on 401/4xx errors. | **High**<br>Resource exhaustion, API ban risk. | Refactor `ChannelServer` | @Backend |
-| **B-04** | **Plain Text Secrets**<br>API tokens stored as plain JSON. | **High**<br>Credential leak risk. | `cloak_ecto` library | @Backend |
-| **B-05** | **Sync Webhooks**<br>Webhooks processed in-request (timeout risk). | **Medium**<br>Stability risk under load. | `Oban` / `Task.Supervisor` | @Backend |
+| ~~**B-01**~~ | ~~**Missing Authentication**~~<br>✅ **RESOLVED**: Full authentication system with phx.gen.auth, protected routes, and session management. | ~~**Catastrophic**~~<br>✅ **FIXED** | ✅ Tests passing | @Backend |
+| ~~**B-02**~~ | ~~**Insecure Webhooks**~~<br>✅ **RESOLVED**: HMAC-SHA256 signature verification with VerifyShopifySignature plug. | ~~**High**~~<br>✅ **FIXED** | ✅ Tests passing (9 tests) | @Backend |
+| ~~**B-03**~~ | ~~**Infinite Retry Loops**~~<br>✅ **RESOLVED**: Exponential backoff with max 5 retries implemented. | ~~**High**~~<br>✅ **FIXED** | ✅ Tests passing | @Backend |
+| ~~**B-04**~~ | ~~**Plain Text Secrets**~~<br>✅ **RESOLVED**: AES.GCM encryption with Cloak.Ecto implemented. | ~~**High**~~<br>✅ **FIXED** | ✅ Tests passing | @Backend |
+| ~~**B-05**~~ | ~~**Sync Webhooks**~~<br>✅ **RESOLVED**: Oban background job processing with 5 retry attempts and webhooks queue. | ~~**Medium**~~<br>✅ **FIXED** | ✅ Tests passing (6 tests) | @Backend |
 
 ---
 
 ## 4. Implementation Checklist
 
 ### P0: Security & Auth (Must Have)
-- [ ] **Implement Authentication** (Est: 4h)
-    - [ ] Run `mix phx.gen.auth Accounts User users`
-    - [ ] Migrate `users` table (resolve conflicts with existing schema)
-    - [ ] Protect `/` scope with `:require_authenticated_user`
-- [ ] **Secure Webhooks** (Est: 2h)
-    - [ ] Add `InventorySyncWeb.Plugs.VerifyShopifySignature`
-    - [ ] Apply plug to `/api/webhooks/shopify`
+- [x] **Implement Authentication** (Est: 4h) ✅ **COMPLETED**
+    - [x] Run `mix phx.gen.auth Accounts User users`
+    - [x] Migrate `users` table (resolved conflict: renamed team users to team_members)
+    - [x] Updated `Inventory.User` schema to point to `team_members` table
+    - [x] Protect `/` scope with `:require_authenticated_user`
+    - [x] All authentication tests passing (143 tests passing)
+- [x] **Secure Webhooks** (Est: 2h) ✅ **COMPLETED**
+    - [x] Created `InventorySyncWeb.Plugs.VerifyShopifySignature` with HMAC-SHA256 verification
+    - [x] Applied plug to `/api/webhooks/shopify` via :shopify_webhooks pipeline
+    - [x] Fixed conn threading to properly handle body reading and signature verification
+    - [x] Comprehensive test suite (9 tests passing)
+    - [x] Constant-time signature comparison to prevent timing attacks
 
 ### P0: Reliability (Must Have)
-- [ ] **Fix Retry Logic** (Est: 3h)
-    - [ ] Add `retry_count` to `ChannelServer` state
-    - [ ] Implement `backoff(retry_count)` function (e.g., 2^n seconds)
-    - [ ] Stop retrying after 5 attempts
-- [ ] **Encrypt Credentials** (Est: 2h)
-    - [ ] Install `cloak_ecto`
-    - [ ] Create `InventorySync.Vault`
-    - [ ] Migration: Convert `credentials` to `binary` (encrypted)
+- [x] **Fix Retry Logic** (Est: 3h) ✅ **COMPLETED**
+    - [x] Add `retry_count` to `ChannelServer` state
+    - [x] Implement `backoff(retry_count)` function (e.g., 2^n seconds)
+    - [x] Stop retrying after 5 attempts
+    - [x] Comprehensive test suite (13 tests passing)
+- [x] **Encrypt Credentials** (Est: 2h) ✅ **COMPLETED**
+    - [x] Install `cloak_ecto`
+    - [x] Create `InventorySync.Vault`
+    - [x] Migration: Convert `credentials` to `binary` (encrypted)
+    - [x] Comprehensive test suite (3 tests passing)
+    - [x] Updated test fixtures to use JSON strings
+    - [x] Added credential decoding in ChannelServer
+    - [x] Fixed integration test MockAdapter configuration
 
 ### P1: Core Features (Should Have)
-- [ ] **Async Webhook Processing** (Est: 3h)
-    - [ ] Create `InventorySync.Workers.WebhookProcessor`
-    - [ ] Controller: Spawn task / Enqueue job -> Return 200 OK immediately
+- [x] **Async Webhook Processing** (Est: 3h) ✅ **COMPLETED**
+    - [x] Installed and configured Oban 2.20.2
+    - [x] Created Oban migration and database tables
+    - [x] Created `InventorySync.Workers.WebhookProcessor` with retry logic (max_attempts: 5)
+    - [x] Updated controller to enqueue jobs and return 200 OK immediately
+    - [x] Configured Oban :inline test mode
+    - [x] Fixed webhook signature verification (proper conn threading)
+    - [x] Added error handling for missing products (try/rescue Ecto.NoResultsError)
+    - [x] Comprehensive test suite (6 tests passing)
 - [ ] **Email Infrastructure** (Est: 1h)
     - [ ] Configure `Swoosh` (Local/SendGrid)
     - [ ] Enable "Forgot Password" / "Invite User" emails

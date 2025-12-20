@@ -41,6 +41,7 @@ defmodule InventorySync.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 3.0"},
+      {:cloak_ecto, "~> 1.3"},
       {:phoenix, "~> 1.8.1"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
@@ -68,7 +69,8 @@ defmodule InventorySync.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:bypass, "~> 2.1", only: :test},
-      {:benchee, "~> 1.0", only: :dev}
+      {:benchee, "~> 1.0", only: :dev},
+      {:oban, "~> 2.18"}
     ]
   end
 
