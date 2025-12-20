@@ -13,7 +13,7 @@ ARG DEBIAN_VERSION=bookworm-20240513-slim
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
-FROM ${BUILDER_IMAGE} as builder
+FROM ${BUILDER_IMAGE} AS builder
 
 # Install build dependencies
 # - build-essential: for native extensions (bcrypt_elixir)
@@ -47,12 +47,14 @@ COPY priv priv
 COPY lib lib
 COPY assets assets
 
-# Compile assets (tailwind + esbuild)
-RUN mix assets.deploy
-
-# Compile the release
+# Copy runtime config (needed for compilation)
 COPY config/runtime.exs config/
+
+# Compile the application first (generates phoenix-colocated hooks)
 RUN mix compile
+
+# Compile assets (tailwind + esbuild) - requires colocated hooks from compile step
+RUN mix assets.deploy
 
 # Generate release
 RUN mix release
