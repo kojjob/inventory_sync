@@ -6,12 +6,9 @@ on:
   pull_request:
     branches: [main, develop]
 
-env:
-  MIX_ENV: test
-
 jobs:
   test:
-    name: Test
+    name: Test Suite
     runs-on: ubuntu-latest
 
     services:
@@ -23,11 +20,11 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: inventory_sync_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      MIX_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/inventory_sync_test
 
     steps:
       - name: Checkout code
@@ -41,30 +38,22 @@ jobs:
 
       - name: Restore dependencies cache
         uses: actions/cache@v4
-        id: deps-cache
         with:
           path: deps
-          key: ${{ runner.os }}-mix-deps-${{ hashFiles('**/mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-deps-
+          key: deps-${{ runner.os }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: deps-${{ runner.os }}-
 
       - name: Restore build cache
         uses: actions/cache@v4
-        id: build-cache
         with:
           path: _build
-          key: ${{ runner.os }}-mix-build-${{ env.MIX_ENV }}-${{ hashFiles('**/mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-build-${{ env.MIX_ENV }}-
-            ${{ runner.os }}-mix-build-
+          key: build-${{ runner.os }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: build-${{ runner.os }}-
 
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Compile dependencies
-        run: mix deps.compile
-
-      - name: Compile application
+      - name: Compile
         run: mix compile --warnings-as-errors
 
       - name: Check formatting
@@ -72,16 +61,12 @@ jobs:
 
       - name: Setup database
         run: mix ecto.setup
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/inventory_sync_test
 
       - name: Run tests
         run: mix test
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/inventory_sync_test
 
   security:
-    name: Security Check
+    name: Security Audit
     runs-on: ubuntu-latest
     needs: test
 
@@ -95,56 +80,13 @@ jobs:
           elixir-version: "1.15.7"
           otp-version: "26.2"
 
-      - name: Restore dependencies cache
-        uses: actions/cache@v4
-        with:
-          path: deps
-          key: ${{ runner.os }}-mix-deps-${{ hashFiles('**/mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-deps-
-
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Check for vulnerable dependencies
+      - name: Audit dependencies
         run: mix deps.audit
         continue-on-error: true
 
-      - name: Check for retired dependencies
+      - name: Audit Hex packages
         run: mix hex.audit
         continue-on-error: true
-
-  assets:
-    name: Assets
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Elixir
-        uses: erlef/setup-beam@v1
-        with:
-          elixir-version: "1.15.7"
-          otp-version: "26.2"
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Restore dependencies cache
-        uses: actions/cache@v4
-        with:
-          path: deps
-          key: ${{ runner.os }}-mix-deps-${{ hashFiles('**/mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-deps-
-
-      - name: Install dependencies
-        run: mix deps.get
-
-      - name: Build assets
-        run: |
-          mix assets.setup
-          mix assets.build
