@@ -397,27 +397,27 @@ defmodule InventorySync.Inventory do
     end
   end
 
-  alias InventorySync.Inventory.User
+  alias InventorySync.Inventory.TeamMember
 
-  def list_users do
-    Repo.all(User)
+  def list_team_members do
+    Repo.all(TeamMember)
   end
 
-  def create_user(attrs) do
-    %User{}
-    |> User.changeset(attrs)
+  def create_team_member(attrs) do
+    %TeamMember{}
+    |> TeamMember.changeset(attrs)
     |> Repo.insert()
   end
 
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_team_member!(id), do: Repo.get!(TeamMember, id)
 
-  def update_user(%User{} = user, attrs) do
-    user
-    |> User.changeset(attrs)
+  def update_team_member(%TeamMember{} = team_member, attrs) do
+    team_member
+    |> TeamMember.changeset(attrs)
     |> Repo.update()
   end
 
-  def change_user(%User{} = user, attrs \\ %{}) do
-    User.changeset(user, attrs)
+  def change_team_member(%TeamMember{} = team_member, attrs \\ %{}) do
+    TeamMember.changeset(team_member, attrs)
   end
 end

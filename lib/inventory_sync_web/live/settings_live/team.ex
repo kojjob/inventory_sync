@@ -1,16 +1,16 @@
 defmodule InventorySyncWeb.SettingsLive.Team do
   use InventorySyncWeb, :live_view
   alias InventorySync.Inventory
-  alias InventorySync.Inventory.User
+  alias InventorySync.Inventory.TeamMember
 
   def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(:page_title, "Team Settings")
-      |> stream(:users, Inventory.list_users())
+      |> stream(:users, Inventory.list_team_members())
       |> assign(:show_modal, false)
       |> assign(:editing_user, nil)
-      |> assign(:form, to_form(Inventory.change_user(%User{})))
+      |> assign(:form, to_form(Inventory.change_team_member(%TeamMember{})))
 
     {:ok, socket}
   end
@@ -78,7 +78,7 @@ defmodule InventorySyncWeb.SettingsLive.Team do
           <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4"><%= if @editing_user, do: "Edit User", else: "Add New User" %></h3>
 
-            <.form for={@form} phx-submit="save" class="space-y-4">
+            <.form for={@form} phx-submit="save" as={:team_member} class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                 <.input field={@form[:name]} type="text" class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600" required />
@@ -119,17 +119,17 @@ defmodule InventorySyncWeb.SettingsLive.Team do
     {:noreply,
      socket
      |> assign(:editing_user, nil)
-     |> assign(:form, to_form(Inventory.change_user(%User{})))
+     |> assign(:form, to_form(Inventory.change_team_member(%TeamMember{})))
      |> assign(:show_modal, true)}
   end
 
   def handle_event("edit-user", %{"id" => id}, socket) do
-    # Fetch user for editing
-    user = Inventory.get_user!(id)
+    # Fetch team member for editing
+    team_member = Inventory.get_team_member!(id)
     {:noreply,
      socket
-     |> assign(:editing_user, user)
-     |> assign(:form, to_form(Inventory.change_user(user)))
+     |> assign(:editing_user, team_member)
+     |> assign(:form, to_form(Inventory.change_team_member(team_member)))
      |> assign(:show_modal, true)}
   end
 
@@ -137,34 +137,34 @@ defmodule InventorySyncWeb.SettingsLive.Team do
     {:noreply, assign(socket, :show_modal, false)}
   end
 
-  def handle_event("save", %{"user" => user_params}, socket) do
-    save_user(socket, socket.assigns.editing_user, user_params)
+  def handle_event("save", %{"team_member" => team_member_params}, socket) do
+    save_team_member(socket, socket.assigns.editing_user, team_member_params)
   end
 
-  defp save_user(socket, nil, user_params) do
-    user_params = Map.put(user_params, "status", "Active")
+  defp save_team_member(socket, nil, team_member_params) do
+    team_member_params = Map.put(team_member_params, "status", "Active")
 
-    case Inventory.create_user(user_params) do
-      {:ok, user} ->
+    case Inventory.create_team_member(team_member_params) do
+      {:ok, team_member} ->
         {:noreply,
          socket
          |> assign(:show_modal, false)
-         |> stream_insert(:users, user)
-         |> put_flash(:info, "User created successfully")}
+         |> stream_insert(:users, team_member)
+         |> put_flash(:info, "Team member created successfully")}
 
       {:error, changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}
     end
   end
 
-  defp save_user(socket, user, user_params) do
-    case Inventory.update_user(user, user_params) do
-      {:ok, user} ->
+  defp save_team_member(socket, team_member, team_member_params) do
+    case Inventory.update_team_member(team_member, team_member_params) do
+      {:ok, team_member} ->
         {:noreply,
          socket
          |> assign(:show_modal, false)
-         |> stream_insert(:users, user)
-         |> put_flash(:info, "User updated successfully")}
+         |> stream_insert(:users, team_member)
+         |> put_flash(:info, "Team member updated successfully")}
 
       {:error, changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}
