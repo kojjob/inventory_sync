@@ -25,7 +25,14 @@ defmodule InventorySyncWeb.Plugs.VerifyShopifySignatureTest do
   end
 
   defp create_conn(body, headers) do
-    Enum.reduce(headers, conn(:post, "/api/webhooks/shopify", body), fn {key, value}, acc ->
+    conn = conn(:post, "/api/webhooks/shopify", body)
+
+    # Simulate what CacheRawBody does - cache the raw body in conn.private
+    # This is necessary because in production, Plug.Parsers runs first with
+    # our custom body reader, which caches the raw body before parsing
+    conn = Plug.Conn.put_private(conn, :raw_body, body)
+
+    Enum.reduce(headers, conn, fn {key, value}, acc ->
       put_req_header(acc, key, value)
     end)
   end
