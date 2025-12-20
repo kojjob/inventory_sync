@@ -126,6 +126,14 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
         4. Wait up to 24 hours for billing changes to propagate
     - **Alternative**: Make repo public (public repos get unlimited free minutes)
     - [ ] Verify CI runs green after billing propagates
+- [x] **Production Dockerfile** (Est: 1h) ✅ **COMPLETED**
+    - [x] Multi-stage Dockerfile (builder + runtime)
+    - [x] Elixir 1.15.7 / OTP 26.2.5 base images
+    - [x] Asset compilation (tailwind + esbuild)
+    - [x] Health check endpoint (`/health`, `/health/live`, `/health/ready`)
+    - [x] Docker Compose for local testing
+    - [x] .dockerignore to minimize build context
+    - [x] 233 tests passing
 
 ### P2: Enhancements (Nice to Have)
 - [x] **Product Mapping** (Est: 5h) ✅ **COMPLETED**

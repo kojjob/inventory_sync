@@ -1,0 +1,60 @@
+# ==============================================================================
+# Docker Compose - Local Development & Testing
+# ==============================================================================
+# Usage:
+#   docker compose up --build        # Build and start all services
+#   docker compose up -d             # Start in detached mode
+#   docker compose logs -f app       # Follow app logs
+#   docker compose down              # Stop and remove containers
+#   docker compose exec app bin/inventory_sync remote  # Attach to IEx
+# ==============================================================================
+
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventory_sync_prod
+    ports:
+      - "5433:5432"  # Use 5433 to avoid conflict with local postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Phoenix Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: ecto://postgres:postgres@db:5432/inventory_sync_prod
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-dGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIGRldmVsb3BtZW50IG9ubHkgZG8gbm90IHVzZSBpbiBwcm9kdWN0aW9u}
+      PHX_HOST: localhost
+      PORT: 4000
+      POOL_SIZE: 10
+      # Generate with: mix cloak.gen.key
+      CLOAK_KEY: ${CLOAK_KEY:-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=}
+      # For local testing only - in production use real webhook secret
+      SHOPIFY_WEBHOOK_SECRET: ${SHOPIFY_WEBHOOK_SECRET:-test_webhook_secret}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+volumes:
+  postgres_data:

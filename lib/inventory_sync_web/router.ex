@@ -38,6 +38,15 @@ defmodule InventorySyncWeb.Router do
     end
   end
 
+  # Health check endpoints (no authentication required)
+  scope "/", InventorySyncWeb do
+    pipe_through :api
+
+    get "/health", HealthController, :index
+    get "/health/live", HealthController, :liveness
+    get "/health/ready", HealthController, :readiness
+  end
+
   # Other scopes may use custom stacks.
   scope "/api", InventorySyncWeb do
     pipe_through :api

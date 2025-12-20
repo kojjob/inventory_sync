@@ -1,0 +1,67 @@
+# ==============================================================================
+# Docker Ignore - Exclude from build context
+# ==============================================================================
+
+# Git
+.git
+.gitignore
+
+# Build artifacts
+_build/
+deps/
+.elixir_ls/
+
+# Test and development
+test/
+.formatter.exs
+coveralls.json
+
+# Node modules (assets are built in container)
+assets/node_modules/
+
+# Documentation
+doc/
+*.md
+!README.md
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files (secrets should be passed at runtime)
+.env
+.env.*
+*.env
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# CI/CD
+.github/
+.circleci/
+
+# Temporary files
+tmp/
+log/
+*.log
+
+# Coverage and test artifacts
+cover/
+priv/static/
+!priv/static/.gitkeep
+
+# Release files (built inside container)
+rel/
+
+# Local development files
+.tool-versions
+.claude/
