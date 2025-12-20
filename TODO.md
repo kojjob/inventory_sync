@@ -109,15 +109,23 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
     - [x] Production configuration documented in config/runtime.exs
 
 ### P1.5: DevOps (Should Have)
-- [ ] **CI/CD Pipeline** (Est: 2h) ⏳ **IN PROGRESS**
+- [ ] **CI/CD Pipeline** (Est: 2h) ⏳ **BLOCKED ON BILLING**
     - [x] Created `.github/workflows/ci.yml` with comprehensive pipeline
     - [x] Test job: PostgreSQL service, format check, compile, tests
     - [x] Security job: dependency audit, hex.audit
     - [x] Assets job: build verification
     - [x] Configured `config/test.exs` for DATABASE_URL support
-    - [ ] **BLOCKED**: GitHub Actions requires spending limit > $0 for private repos
-    - [ ] Fix: Go to GitHub Settings → Billing → Actions → Set limit to $1+
-    - [ ] Verify CI runs green after billing fix
+    - [x] Workflow syntax validated (actionlint passes locally)
+    - [x] Cleaned up debugging workflows (test.yml, minimal.yml removed)
+    - [ ] **BLOCKED**: GitHub Actions returns `startup_failure` for all workflows
+    - **Root Cause**: Private repos on Free plan get ZERO CI minutes
+    - **Fix Required**:
+        1. Go to https://github.com/settings/billing/spending_limit
+        2. Set "Actions and Packages" spending limit to at least $1
+        3. Ensure valid payment method on file
+        4. Wait up to 24 hours for billing changes to propagate
+    - **Alternative**: Make repo public (public repos get unlimited free minutes)
+    - [ ] Verify CI runs green after billing propagates
 
 ### P2: Enhancements (Nice to Have)
 - [x] **Product Mapping** (Est: 5h) ✅ **COMPLETED**
