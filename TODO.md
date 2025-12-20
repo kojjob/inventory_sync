@@ -1,82 +1,142 @@
-# Project Roadmap & TODOs
+# Inventory Sync - Project Master Plan
 
-## Phase 1: Foundation (Core Logic) 🏗️
-- [x] **Project Initialization**
-    - [x] Phoenix app scaffold (`mix phx.new`)
-    - [x] Database setup (PostgreSQL)
-    - [x] Git repository setup
-- [x] **Core Data Models**
-    - [x] `Channel` schema (stores credentials, platform type)
-    - [x] `Product` schema (SKU, total quantity)
-    - [x] `InventoryItem` schema (links Product <-> Channel)
-    - [x] Database migrations & associations
-- [x] **Sync Architecture (Internal)**
-    - [x] `InventoryAdapter` behaviour definition
-    - [x] `ChannelServer` (GenServer) for per-channel state management
-    - [x] `SyncManager` (DynamicSupervisor) for worker lifecycle
-    - [x] `Phoenix.PubSub` integration for broadcasting updates
-    - [x] **Integration Test**: Verify `Update Product -> PubSub -> Worker -> Adapter` flow
+**Last Updated:** 2025-12-20
+**Version:** 0.8.0 (Pre-Alpha)
 
-## Phase 2: Platform Integrations 🔌
-- [x] **Shopify Integration**
-    - [x] Implement `ShopifyAdapter` (Real API calls)
-        - [x] Authentication (Access Token handling)
-        - [x] `update_inventory/3` implementation
-        - [x] `fetch_inventory/2` implementation
-    - [x] Webhook Handler (Incoming updates from Shopify)
-- [x] **Amazon Integration** (MVP)
-    - [x] Implement `AmazonAdapter` Stub
-    - [ ] Implement `AmazonAdapter` (SP-API)
-        - [ ] Signing requests (AWS SigV4)
-        - [ ] Feed API for inventory updates (async processing)
-- [x] **Etsy Integration** (MVP)
-    - [x] Implement `EtsyAdapter` Stub
-    - [ ] Implement `EtsyAdapter` (v3 API)
-        - [ ] OAuth 2.0 flow
-        - [ ] Inventory update endpoint
+---
 
-## Phase 3: Reliability & Performance 🚀
-- [x] **Performance Benchmarking**
-    - [x] Set up `Benchee` scenarios
-    - [x] Measure sync throughput (events per second)
-        - *Result*: ~678 syncs/sec with fan-out to 5 channels (Local DB, Mock Adapter)
-    - [ ] Optimize database queries (bulk inserts/updates)
-- [x] **Fault Tolerance**
-    - [x] Implement Retry Logic (Simple exponential backoff simulation)
-    - [x] Rate Limiting (Token bucket per channel)
-    - [ ] Idempotency keys for webhook processing
-- [ ] **"Black Friday Mode"**
-    - [ ] Batching mechanism for high-volume updates
-    - [ ] Toggle to switch between Real-time and Batched modes
-- [x] **Telemetry & Monitoring**
-    - [x] Track sync latency
-    - [x] Count successful/failed syncs per channel
-    - [x] Dashboard for system health (Phoenix LiveDashboard configured)
+## 1. Project Overview
 
-## Phase 4: Webhook Ingestion (Incoming) 📥
-- [ ] **Webhook Endpoints**
-    - [ ] Generic webhook controller
-    - [ ] Signature verification (Security)
-- [ ] **Processing Pipeline**
-    - [ ] Parse incoming payload -> Update `Product` quantity -> Trigger Sync (Fan-out)
+### Goal & Scope
+To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The platform connects inventory sources (e.g., Warehouse, ERP) with sales channels (Shopify, Amazon, Etsy) to ensure stock levels are accurate everywhere, preventing overselling.
 
-## Phase 5: User Interface (Phoenix LiveView) 🖥️
-- [ ] **Dashboard**
-    - [ ] Real-time view of active channels
-    - [ ] Recent sync activity log
-- [ ] **Channel Configuration**
-    - [ ] Add/Edit/Remove Channels
-    - [ ] OAuth callback pages
-- [ ] **Inventory Management**
-    - [ ] Manual override of inventory levels
-    - [ ] Product mapping (SKU matching)
+### Current Status
+- **Core Engine:** Functional (GenServer/PubSub architecture).
+- **Integrations:** Shopify (Full), Amazon/Etsy (Stubs).
+- **UI/UX:** Modern Dashboard, Channel/Product/Team management implemented.
+- **Readiness:** ⚠️ **NOT READY FOR PRODUCTION**. Critical security and reliability features are missing.
 
-## Phase 6: Deployment & Operations ☁️
-- [ ] **CI/CD Pipeline**
-    - [ ] GitHub Actions for tests and formatting
-- [ ] **Production Environment**
-    - [ ] Dockerfile setup
-    - [ ] Fly.io / Gigalixir configuration
-- [ ] **Security Review**
-    - [ ] Credential encryption (Vault or similar)
-    - [ ] Rate limiting for incoming webhooks
+### Timeline
+- **Phase:** Hardening & Security (Current)
+- **Target Deployment:** ASAP (pending resolution of blockers)
+
+---
+
+## 2. Task Categories
+
+### 🛠️ Backend Development (Elixir/Phoenix)
+- **Authentication**: User sessions, password hashing, protected routes.
+- **Security**: Webhook signature verification, encrypted credentials.
+- **Reliability**: Rate limiting (Redis/DB), Exponential backoff for retries, Async job processing (Oban).
+- **API**: Clean up webhook controllers, standardize responses.
+
+### 🖥️ Frontend Development (LiveView)
+- **Feedback**: Better error states, loading indicators for long-running syncs.
+- **Management**: "Edit Channel" forms, "Manual Inventory Adjustment" UI.
+
+### 🧪 Testing
+- **Unit**: High coverage for `ChannelServer` logic and Contexts.
+- **Integration**: End-to-end sync flow verification.
+- **Load**: Validate "Black Friday" throughput (target: 1000 syncs/sec).
+
+### 🚀 Deployment & DevOps
+- **CI/CD**: GitHub Actions for testing/linting.
+- **Infrastructure**: Dockerfile, Secrets management, Database backups.
+
+---
+
+## 3. Blocker Details (Critical Path)
+
+| ID | Blocker Description | Impact | Required Resources | Owner |
+|----|---------------------|--------|--------------------|-------|
+| **B-01** | **Missing Authentication**<br>No login system. Dashboard is public. | **Catastrophic**<br>Cannot deploy securely. | `phx.gen.auth` | @Backend |
+| **B-02** | **Insecure Webhooks**<br>Shopify webhook endpoint accepts any POST request. | **High**<br>Data integrity risk (malicious overwrites). | HMAC Verification Logic | @Backend |
+| **B-03** | **Infinite Retry Loops**<br>Worker retries forever on 401/4xx errors. | **High**<br>Resource exhaustion, API ban risk. | Refactor `ChannelServer` | @Backend |
+| **B-04** | **Plain Text Secrets**<br>API tokens stored as plain JSON. | **High**<br>Credential leak risk. | `cloak_ecto` library | @Backend |
+| **B-05** | **Sync Webhooks**<br>Webhooks processed in-request (timeout risk). | **Medium**<br>Stability risk under load. | `Oban` / `Task.Supervisor` | @Backend |
+
+---
+
+## 4. Implementation Checklist
+
+### P0: Security & Auth (Must Have)
+- [ ] **Implement Authentication** (Est: 4h)
+    - [ ] Run `mix phx.gen.auth Accounts User users`
+    - [ ] Migrate `users` table (resolve conflicts with existing schema)
+    - [ ] Protect `/` scope with `:require_authenticated_user`
+- [ ] **Secure Webhooks** (Est: 2h)
+    - [ ] Add `InventorySyncWeb.Plugs.VerifyShopifySignature`
+    - [ ] Apply plug to `/api/webhooks/shopify`
+
+### P0: Reliability (Must Have)
+- [ ] **Fix Retry Logic** (Est: 3h)
+    - [ ] Add `retry_count` to `ChannelServer` state
+    - [ ] Implement `backoff(retry_count)` function (e.g., 2^n seconds)
+    - [ ] Stop retrying after 5 attempts
+- [ ] **Encrypt Credentials** (Est: 2h)
+    - [ ] Install `cloak_ecto`
+    - [ ] Create `InventorySync.Vault`
+    - [ ] Migration: Convert `credentials` to `binary` (encrypted)
+
+### P1: Core Features (Should Have)
+- [ ] **Async Webhook Processing** (Est: 3h)
+    - [ ] Create `InventorySync.Workers.WebhookProcessor`
+    - [ ] Controller: Spawn task / Enqueue job -> Return 200 OK immediately
+- [ ] **Email Infrastructure** (Est: 1h)
+    - [ ] Configure `Swoosh` (Local/SendGrid)
+    - [ ] Enable "Forgot Password" / "Invite User" emails
+
+### P2: Enhancements (Nice to Have)
+- [ ] **Product Mapping** (Est: 5h)
+    - [ ] UI to link different SKUs across channels
+- [ ] **Audit Logs** (Est: 2h)
+    - [ ] Track *who* changed a setting or invited a user
+
+---
+
+## 5. Testing Requirements
+
+### Unit Test Targets
+- [ ] **Coverage**: > 80% for `Inventory` context and `ChannelServer`.
+- [ ] **Key Scenarios**:
+    - `ChannelServer` respects rate limits.
+    - `ChannelServer` stops retrying after max attempts.
+    - `ShopifyAdapter` handles 429 Too Many Requests correctly.
+
+### Integration Test Scenarios
+- [ ] **Full Sync Loop**:
+    1. Update Product Quantity in DB.
+    2. Assert PubSub message received.
+    3. Assert Worker calls Adapter.
+    4. Assert SyncHistory record created.
+- [ ] **Webhook Flow**:
+    1. Post payload to `/api/webhooks/shopify` with valid HMAC.
+    2. Assert Product Quantity updated in DB.
+    3. Assert Sync triggered for other channels.
+
+### Performance Testing
+- [ ] **Throughput**: Sustain 100 webhook events/sec without crashing.
+- [ ] **Latency**: 95th percentile sync time < 2 seconds (for external API calls).
+
+---
+
+## 6. Verification Section
+
+### Completion Criteria
+- [ ] All **P0** items checked off.
+- [ ] `mix test` passes (Green).
+- [ ] No secrets in `config/runtime.exs` or logs.
+- [ ] `mix dialyzer` (Static Analysis) clean (optional but recommended).
+
+### Sign-Offs
+- [ ] Security Review (Auth & HMAC verified)
+- [ ] Load Test Review (Stable under load)
+- [ ] Deployment Dry-Run (Staging environment)
+
+---
+
+**Version History**
+- **v0.1.0**: Initial Scaffold
+- **v0.5.0**: Integrations Added
+- **v0.7.0**: Dashboard UI
+- **v0.8.0**: Security Hardening Plan (Current)

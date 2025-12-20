@@ -24,12 +24,65 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/inventory_sync"
 import topbar from "../vendor/topbar"
+// Sidebar persistence
+const SIDEBAR_KEY = "sidebarCollapsed"
+function setupSidebarPersistence() {
+  const root = document.getElementById("app-root") || document.body
+  const collapsed = localStorage.getItem(SIDEBAR_KEY) === "true"
+  if (collapsed) root.classList.add("sidebar-collapsed")
+  window.addEventListener("phx:sidebar:toggle", () => {
+    const nowCollapsed = !root.classList.contains("sidebar-collapsed")
+    root.classList.toggle("sidebar-collapsed", nowCollapsed)
+    localStorage.setItem(SIDEBAR_KEY, String(nowCollapsed))
+  })
+}
+
+// Chart Hook
+const SyncChart = {
+  mounted() {
+    this.renderChart(JSON.parse(this.el.dataset.points))
+    this.handleEvent("update_chart", ({points}) => {
+      this.renderChart(points)
+    })
+  },
+  updated() {
+    this.renderChart(JSON.parse(this.el.dataset.points))
+  },
+  renderChart(points) {
+    const ctx = this.el.getContext('2d')
+    if (this.chart) this.chart.destroy()
+    
+    this.chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: points.map(p => p.label),
+        datasets: [{
+          label: 'Sync Events',
+          data: points.map(p => p.value),
+          backgroundColor: '#4f46e5',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { display: false } },
+          x: { grid: { display: false } }
+        }
+      }
+    })
+  }
+}
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: {...colocatedHooks, SyncChart},
 })
 
 // Show progress bar on live navigation and form submits
@@ -39,6 +92,7 @@ window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
+setupSidebarPersistence()
 
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
@@ -79,5 +133,13 @@ if (process.env.NODE_ENV === "development") {
 
     window.liveReloader = reloader
   })
-}
 
+  // Minimal UI unit tests (development only)
+  try {
+    const assert = (name, cond) => console[(cond ? "log" : "error")](`UI Test: ${name} -> ${cond ? "PASS" : "FAIL"}`)
+    const root = document.getElementById("app-root") || document.body
+    const initial = root.classList.contains("sidebar-collapsed")
+    window.dispatchEvent(new CustomEvent("phx:sidebar:toggle"))
+    assert("Sidebar toggles class", root.classList.contains("sidebar-collapsed") !== initial)
+  } catch (_) { /* no-op */ }
+}

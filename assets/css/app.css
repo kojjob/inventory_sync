@@ -103,3 +103,14 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Sidebar collapse behavior */
+@media (min-width: 1024px) {
+  .sidebar-collapsed .sidebar-panel { width: 5rem; }
+  .sidebar-collapsed .app-content { padding-left: 5rem; }
+}
+
+/* Notification dropdown scrollbar */
+.custom-scrollbar { scrollbar-width: thin; }
+.custom-scrollbar::-webkit-scrollbar { width: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(100, 116, 139, 0.5); border-radius: 8px; }
