@@ -8,8 +8,6 @@ on:
 
 env:
   MIX_ENV: test
-  ELIXIR_VERSION: "1.15.7"
-  OTP_VERSION: "26.2"
 
 jobs:
   test:
@@ -38,8 +36,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: "1.15.7"
+          otp-version: "26.2"
 
       - name: Restore dependencies cache
         uses: actions/cache@v4
@@ -94,8 +92,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: "1.15.7"
+          otp-version: "26.2"
 
       - name: Restore dependencies cache
         uses: actions/cache@v4
@@ -127,8 +125,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: "1.15.7"
+          otp-version: "26.2"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
