@@ -101,13 +101,20 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
     - [x] Fixed webhook signature verification (proper conn threading)
     - [x] Added error handling for missing products (try/rescue Ecto.NoResultsError)
     - [x] Comprehensive test suite (6 tests passing)
-- [ ] **Email Infrastructure** (Est: 1h)
-    - [ ] Configure `Swoosh` (Local/SendGrid)
-    - [ ] Enable "Forgot Password" / "Invite User" emails
+- [x] **Email Infrastructure** (Est: 1h) ✅ **COMPLETED**
+    - [x] Configure `Swoosh` (Local/SendGrid)
+    - [x] Enable "Forgot Password" / "Invite User" emails
+    - [x] Password reset emails verified (8 tests passing)
+    - [x] Team invitation emails verified (5 tests passing)
+    - [x] Production configuration documented in config/runtime.exs
 
 ### P2: Enhancements (Nice to Have)
-- [ ] **Product Mapping** (Est: 5h)
-    - [ ] UI to link different SKUs across channels
+- [x] **Product Mapping** (Est: 5h) ✅ **COMPLETED**
+    - [x] UI to link different SKUs across channels
+    - [x] `list_inventory_items_for_product/1` with channel preloading
+    - [x] ProductLive.Index tests (11 tests)
+    - [x] ProductLive.Show tests (12 tests)
+    - [x] All 23 Product Mapping tests passing
 - [ ] **Audit Logs** (Est: 2h)
     - [ ] Track *who* changed a setting or invited a user
 
