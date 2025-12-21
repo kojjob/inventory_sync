@@ -262,9 +262,8 @@ defmodule InventorySyncWeb.MetricsLive do
   defp get_sync_history do
     Inventory.list_recent_sync_history(10)
     |> Enum.map(fn history ->
-      channel = if history.channel_id, do: Inventory.get_channel(history.channel_id), else: nil
       %{
-        channel_name: if(channel, do: channel.name, else: "System"),
+        channel_name: history.channel_name || "System",
         status: history.status,
         message: history.message,
         time: format_time(history.timestamp)
