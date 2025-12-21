@@ -76,12 +76,30 @@ defmodule InventorySyncWeb.Layouts do
 
   def public_navbar(assigns) do
     ~H"""
-    <nav class="px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700/50">
+    <nav class="sticky top-0 z-50 px-6 py-4 bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 transition-all duration-300">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <!-- Logo -->
         <.link href={~p"/"} class="flex items-center gap-2 hover:opacity-90 transition-opacity">
           <.logo size="md" />
         </.link>
 
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#features" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+            Features
+          </a>
+          <a href="#pricing" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+            Pricing
+          </a>
+          <a href="#testimonials" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+            Testimonials
+          </a>
+          <a href="#faq" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+            FAQ
+          </a>
+        </div>
+
+        <!-- Auth Actions -->
         <div class="flex items-center gap-4">
           <%= if @current_scope do %>
             <span class="text-slate-400 text-sm hidden sm:inline">
@@ -89,29 +107,66 @@ defmodule InventorySyncWeb.Layouts do
             </span>
             <.link
               href={~p"/dashboard"}
-              class="text-slate-300 hover:text-white transition-colors font-medium"
+              class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm"
             >
               Dashboard
             </.link>
             <.link
               href={~p"/users/log-out"}
               method="delete"
-              class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors border border-slate-600"
+              class="px-4 py-2 bg-slate-700/80 hover:bg-slate-600 text-white rounded-lg font-medium transition-all border border-slate-600/50 hover:border-slate-500/50 text-sm"
             >
               Log out
             </.link>
           <% else %>
             <.link
               href={~p"/users/log-in"}
-              class="text-slate-300 hover:text-white transition-colors font-medium"
+              class="hidden sm:inline text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm"
             >
               Log in
             </.link>
             <.link
               href={~p"/users/register"}
-              class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors shadow-lg shadow-emerald-500/25"
+              class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 text-sm btn-glow"
             >
-              Get Started
+              Get Started Free
+            </.link>
+          <% end %>
+
+          <!-- Mobile Menu Button -->
+          <button
+            class="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+            onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+            aria-label="Toggle mobile menu"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="hidden md:hidden mt-4 pt-4 border-t border-slate-700/50">
+        <div class="flex flex-col gap-4">
+          <a href="#features" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+            Features
+          </a>
+          <a href="#pricing" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+            Pricing
+          </a>
+          <a href="#testimonials" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+            Testimonials
+          </a>
+          <a href="#faq" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+            FAQ
+          </a>
+          <%= unless @current_scope do %>
+            <.link
+              href={~p"/users/log-in"}
+              class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2"
+            >
+              Log in
             </.link>
           <% end %>
         </div>
@@ -130,12 +185,18 @@ defmodule InventorySyncWeb.Layouts do
   def footer(assigns) do
     ~H"""
     <footer class={[
-      "px-6 py-8 border-t border-slate-700/50 bg-slate-900",
+      "px-6 py-12 border-t border-slate-700/50 bg-gradient-to-b from-slate-900 to-slate-950 relative overflow-hidden",
       @class
     ]}>
-      <div class="max-w-7xl mx-auto">
+      <!-- Subtle background decoration -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto relative z-10">
         <%= if @variant == "default" do %>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12 mb-12">
             <!-- Brand Column -->
             <div class="md:col-span-1">
               <.logo size="sm" />
@@ -143,30 +204,58 @@ defmodule InventorySyncWeb.Layouts do
                 Automatically synchronize inventory levels across all your sales channels.
                 Never oversell again.
               </p>
+              <!-- Newsletter Signup -->
+              <div class="mt-6">
+                <p class="text-xs text-slate-500 mb-2">Subscribe to our newsletter</p>
+                <div class="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    class="flex-1 px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25 transition-all"
+                  />
+                  <button class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Product Column -->
             <div>
-              <h4 class="text-sm font-semibold text-white mb-4">Product</h4>
+              <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Product</h4>
               <ul class="space-y-3">
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Features
+                  <a href="#features" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Features</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Integrations
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Integrations</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Pricing
+                  <a href="#pricing" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Pricing</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Changelog
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Changelog</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
               </ul>
@@ -174,26 +263,36 @@ defmodule InventorySyncWeb.Layouts do
 
             <!-- Company Column -->
             <div>
-              <h4 class="text-sm font-semibold text-white mb-4">Company</h4>
+              <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Company</h4>
               <ul class="space-y-3">
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    About
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>About</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Blog
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Blog</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Careers
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Careers</span>
+                    <span class="ml-1 px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded">Hiring</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Contact
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Contact</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
               </ul>
@@ -201,21 +300,38 @@ defmodule InventorySyncWeb.Layouts do
 
             <!-- Legal Column -->
             <div>
-              <h4 class="text-sm font-semibold text-white mb-4">Legal</h4>
+              <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Legal</h4>
               <ul class="space-y-3">
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Privacy Policy
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Privacy Policy</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Terms of Service
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Terms of Service</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-                    Cookie Policy
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>Cookie Policy</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                    <span>GDPR</span>
+                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </li>
               </ul>
@@ -223,27 +339,33 @@ defmodule InventorySyncWeb.Layouts do
           </div>
 
           <!-- Bottom Bar -->
-          <div class="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p class="text-sm text-slate-500">
-              © {DateTime.utc_now().year} InventorySync. All rights reserved.
-            </p>
+          <div class="pt-8 border-t border-slate-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <p class="text-sm text-slate-500">
+                © {DateTime.utc_now().year} InventorySync. All rights reserved.
+              </p>
+              <span class="hidden sm:inline text-slate-700">•</span>
+              <p class="text-xs text-slate-600">
+                Made with ❤️ for e-commerce sellers worldwide
+              </p>
+            </div>
             <div class="flex items-center gap-4">
-              <!-- Social Icons -->
+              <!-- Social Icons with hover effects -->
               <a
                 href="#"
-                class="text-slate-400 hover:text-emerald-400 transition-colors"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800/50 text-slate-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-all"
                 aria-label="Twitter"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </a>
               <a
                 href="#"
-                class="text-slate-400 hover:text-emerald-400 transition-colors"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800/50 text-slate-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-all"
                 aria-label="GitHub"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     fill-rule="evenodd"
                     clip-rule="evenodd"
@@ -253,11 +375,20 @@ defmodule InventorySyncWeb.Layouts do
               </a>
               <a
                 href="#"
-                class="text-slate-400 hover:text-emerald-400 transition-colors"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800/50 text-slate-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-all"
                 aria-label="LinkedIn"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+              </a>
+              <a
+                href="#"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800/50 text-slate-400 hover:bg-emerald-500/20 hover:text-emerald-400 transition-all"
+                aria-label="YouTube"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                 </svg>
               </a>
             </div>
