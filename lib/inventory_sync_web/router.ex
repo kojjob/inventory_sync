@@ -22,13 +22,24 @@ defmodule InventorySyncWeb.Router do
     plug InventorySyncWeb.Plugs.VerifyShopifySignature
   end
 
+  # Public landing page (no authentication required)
+  scope "/", InventorySyncWeb do
+    pipe_through [:browser]
+
+    live_session :public,
+      root_layout: {InventorySyncWeb.Layouts, :public} do
+      live "/", LandingLive, :index
+    end
+  end
+
+  # Protected routes (authentication required)
   scope "/", InventorySyncWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :default,
       layout: {InventorySyncWeb.Layouts, :app},
       on_mount: InventorySyncWeb.NavHook do
-      live "/", DashboardLive
+      live "/dashboard", DashboardLive
       live "/products", ProductLive.Index, :index
       live "/products/:id", ProductLive.Show, :show
       live "/channels", ChannelLive.Index, :index
