@@ -1,0 +1,51 @@
+# ==============================================================================
+# Fly.io Configuration - Inventory Sync
+# ==============================================================================
+# Deploy: flyctl deploy
+# Logs:   flyctl logs
+# SSH:    flyctl ssh console
+# ==============================================================================
+
+app = "kojo-inventory-sync"
+primary_region = "ord"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PHX_HOST = "kojo-inventory-sync.fly.dev"
+  PORT = "4000"
+  POOL_SIZE = "2"
+  ECTO_IPV6 = "true"
+  ERL_AFLAGS = "-proto_dist inet6_tcp"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 1000
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[deploy]
+  release_command = "/app/bin/inventory_sync eval 'InventorySync.Release.migrate()'"
+
+[checks]
+  [checks.health]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    path = "/health"
+    port = 4000
+    timeout = "5s"
+    type = "http"

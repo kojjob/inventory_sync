@@ -7,7 +7,7 @@ defmodule InventorySyncWeb.UserRegistrationControllerTest do
     test "renders registration page", %{conn: conn} do
       conn = get(conn, ~p"/users/register")
       response = html_response(conn, 200)
-      assert response =~ "Register"
+      assert response =~ "Create your account"
       assert response =~ ~p"/users/log-in"
       assert response =~ ~p"/users/register"
     end
@@ -15,7 +15,7 @@ defmodule InventorySyncWeb.UserRegistrationControllerTest do
     test "redirects if already logged in", %{conn: conn} do
       conn = conn |> log_in_user(user_fixture()) |> get(~p"/users/register")
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/dashboard"
     end
   end
 
@@ -43,7 +43,7 @@ defmodule InventorySyncWeb.UserRegistrationControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "Register"
+      assert response =~ "Create your account"
       assert response =~ "must have the @ sign and no spaces"
     end
   end

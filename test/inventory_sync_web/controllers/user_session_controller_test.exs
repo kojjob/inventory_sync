@@ -60,8 +60,11 @@ defmodule InventorySyncWeb.UserSessionControllerTest do
 
       conn = get(conn, ~p"/users/log-in/#{token}")
       html = html_response(conn, 200)
+      # Confirmed users should not see the confirmation prompt
       refute html =~ "Confirm my account"
-      assert html =~ "Log in"
+      # They should see the already confirmed state with login options
+      assert html =~ "Already Confirmed!"
+      assert html =~ "Log me in only this time"
     end
 
     test "raises error for invalid token", %{conn: conn} do
@@ -83,10 +86,10 @@ defmodule InventorySyncWeb.UserSessionControllerTest do
         })
 
       assert get_session(conn, :user_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/dashboard"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"/dashboard")
       response = html_response(conn, 200)
       assert response =~ user.email
       assert response =~ ~p"/users/settings"
@@ -106,7 +109,7 @@ defmodule InventorySyncWeb.UserSessionControllerTest do
         })
 
       assert conn.resp_cookies["_inventory_sync_web_user_remember_me"]
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/dashboard"
     end
 
     test "logs the user in with return to", %{conn: conn, user: user} do
@@ -158,10 +161,10 @@ defmodule InventorySyncWeb.UserSessionControllerTest do
         })
 
       assert get_session(conn, :user_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/dashboard"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"/dashboard")
       response = html_response(conn, 200)
       assert response =~ user.email
       assert response =~ ~p"/users/settings"
@@ -179,13 +182,13 @@ defmodule InventorySyncWeb.UserSessionControllerTest do
         })
 
       assert get_session(conn, :user_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/dashboard"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "User confirmed successfully."
 
       assert Accounts.get_user!(user.id).confirmed_at
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"/dashboard")
       response = html_response(conn, 200)
       assert response =~ user.email
       assert response =~ ~p"/users/settings"
