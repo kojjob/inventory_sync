@@ -60,8 +60,11 @@ defmodule InventorySyncWeb.UserSessionControllerTest do
 
       conn = get(conn, ~p"/users/log-in/#{token}")
       html = html_response(conn, 200)
+      # Confirmed users should not see the confirmation prompt
       refute html =~ "Confirm my account"
-      assert html =~ "Log in"
+      # They should see the already confirmed state with login options
+      assert html =~ "Already Confirmed!"
+      assert html =~ "Log me in only this time"
     end
 
     test "raises error for invalid token", %{conn: conn} do
