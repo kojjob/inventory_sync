@@ -1,31 +1,37 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 lg:px-8 py-12">
-  <div class="w-full max-w-md">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 sm:px-6 lg:px-8 py-12">
+  <!-- Animated background blobs -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+  </div>
+
+  <div class="w-full max-w-md relative z-10">
     <!-- Header -->
     <div class="text-center mb-8">
-      <div class="inline-block p-4 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mb-4">
+      <div class="inline-block p-4 rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 mb-4">
         <.icon name="hero-user-plus" class="w-12 h-12 text-white" />
       </div>
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create your account</h2>
-      <p class="text-gray-600 dark:text-gray-400">
+      <h2 class="text-3xl font-bold text-white mb-2">Create your account</h2>
+      <p class="text-slate-400">
         Join us and start managing your inventory
       </p>
     </div>
-    
-<!-- Main Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-2xl">
+
+    <!-- Main Card -->
+    <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-emerald-500/5">
       <div class="p-8">
         <.form :let={f} for={@changeset} action={~p"/users/register"} class="space-y-5">
           <!-- Email Field -->
           <div>
             <label
               for={f[:email].id}
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              class="block text-sm font-medium text-slate-300 mb-2"
             >
               Email address
             </label>
             <div class="relative rounded-xl shadow-sm">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <.icon name="hero-envelope" class="h-5 w-5 text-gray-400" />
+                <.icon name="hero-envelope" class="h-5 w-5 text-slate-400" />
               </div>
               <.input
                 field={f[:email]}
@@ -33,120 +39,120 @@
                 autocomplete="email"
                 required
                 phx-mounted={JS.focus()}
-                class="block w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+                class="block w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
                 placeholder="you@example.com"
               />
             </div>
-            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-2 text-xs text-slate-400">
               We'll send you a magic link to verify your email
             </p>
           </div>
-          
-<!-- Password Field -->
+
+          <!-- Password Field -->
           <div>
             <label
               for={f[:password].id}
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              class="block text-sm font-medium text-slate-300 mb-2"
             >
               Password (optional)
             </label>
             <div class="relative rounded-xl shadow-sm">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <.icon name="hero-lock-closed" class="h-5 w-5 text-gray-400" />
+                <.icon name="hero-lock-closed" class="h-5 w-5 text-slate-400" />
               </div>
               <.input
                 field={f[:password]}
                 type="password"
                 autocomplete="new-password"
-                class="block w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+                class="block w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
                 placeholder="Create a strong password"
               />
             </div>
-            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-2 text-xs text-slate-400">
               Or use magic link authentication for password-less login
             </p>
           </div>
-          
-<!-- Terms Agreement -->
-          <div class="rounded-xl bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-200 dark:border-gray-700">
-            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+
+          <!-- Terms Agreement -->
+          <div class="rounded-xl bg-slate-700/30 p-4 border border-slate-600/50">
+            <p class="text-xs text-slate-400 leading-relaxed">
               By creating an account, you agree to our
               <a
                 href="/terms"
-                class="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                class="text-emerald-400 hover:text-emerald-300 hover:underline font-medium"
               >
                 Terms of Service
               </a>
               and
               <a
                 href="/privacy"
-                class="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                class="text-emerald-400 hover:text-emerald-300 hover:underline font-medium"
               >
                 Privacy Policy
               </a>
             </p>
           </div>
-          
-<!-- Submit Button -->
+
+          <!-- Submit Button -->
           <button
             type="submit"
             phx-disable-with="Creating account..."
-            class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             Create account <.icon name="hero-arrow-right" class="w-5 h-5" />
           </button>
         </.form>
-        
-<!-- Features List -->
-        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+
+        <!-- Features List -->
+        <div class="mt-8 pt-6 border-t border-slate-700/50">
+          <p class="text-xs font-medium text-slate-500 mb-3 uppercase tracking-wide">
             What you'll get
           </p>
           <ul class="space-y-2">
             <li class="flex items-start gap-3">
-              <div class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                <.icon name="hero-check" class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              <div class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-emerald-900/50 flex items-center justify-center">
+                <.icon name="hero-check" class="w-3 h-3 text-emerald-400" />
               </div>
-              <span class="text-sm text-gray-600 dark:text-gray-400">
+              <span class="text-sm text-slate-400">
                 Real-time inventory synchronization
               </span>
             </li>
             <li class="flex items-start gap-3">
-              <div class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                <.icon name="hero-check" class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              <div class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-emerald-900/50 flex items-center justify-center">
+                <.icon name="hero-check" class="w-3 h-3 text-emerald-400" />
               </div>
-              <span class="text-sm text-gray-600 dark:text-gray-400">
+              <span class="text-sm text-slate-400">
                 Multi-channel product management
               </span>
             </li>
             <li class="flex items-start gap-3">
-              <div class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                <.icon name="hero-check" class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              <div class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-emerald-900/50 flex items-center justify-center">
+                <.icon name="hero-check" class="w-3 h-3 text-emerald-400" />
               </div>
-              <span class="text-sm text-gray-600 dark:text-gray-400">
+              <span class="text-sm text-slate-400">
                 Advanced analytics and reporting
               </span>
             </li>
           </ul>
         </div>
       </div>
-      
-<!-- Footer -->
-      <div class="px-8 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
-        <p class="text-center text-sm text-gray-600 dark:text-gray-400">
+
+      <!-- Footer -->
+      <div class="px-8 py-4 bg-slate-900/50 border-t border-slate-700/50">
+        <p class="text-center text-sm text-slate-400">
           Already have an account?
           <.link
             navigate={~p"/users/log-in"}
-            class="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors"
+            class="font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
           >
             Sign in
           </.link>
         </p>
       </div>
     </div>
-    
-<!-- Security Notice -->
-    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-500">
+
+    <!-- Security Notice -->
+    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
       <.icon name="hero-shield-check" class="w-4 h-4" />
       <span>Your data is encrypted and secure</span>
     </div>
