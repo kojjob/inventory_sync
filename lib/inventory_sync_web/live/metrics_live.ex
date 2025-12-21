@@ -31,12 +31,11 @@ defmodule InventorySyncWeb.MetricsLive do
           phx-click="refresh"
           class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
         >
-          <.icon name="hero-arrow-path" class="w-4 h-4" />
-          Refresh
+          <.icon name="hero-arrow-path" class="w-4 h-4" /> Refresh
         </button>
       </div>
-
-      <!-- Overview Stats -->
+      
+    <!-- Overview Stats -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <.metric_card
           title="Total Syncs"
@@ -67,8 +66,8 @@ defmodule InventorySyncWeb.MetricsLive do
           color="amber"
         />
       </div>
-
-      <!-- Detailed Metrics -->
+      
+    <!-- Detailed Metrics -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Sync History -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
@@ -102,8 +101,8 @@ defmodule InventorySyncWeb.MetricsLive do
             </div>
           </div>
         </div>
-
-        <!-- Channel Performance -->
+        
+    <!-- Channel Performance -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Channel Performance
@@ -133,8 +132,8 @@ defmodule InventorySyncWeb.MetricsLive do
           </div>
         </div>
       </div>
-
-      <!-- System Health -->
+      
+    <!-- System Health -->
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">System Health</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -167,7 +166,12 @@ defmodule InventorySyncWeb.MetricsLive do
       "amber" => "from-amber-500 to-amber-600"
     }
 
-    assigns = assign(assigns, :gradient, Map.get(color_classes, assigns.color, "from-gray-500 to-gray-600"))
+    assigns =
+      assign(
+        assigns,
+        :gradient,
+        Map.get(color_classes, assigns.color, "from-gray-500 to-gray-600")
+      )
 
     ~H"""
     <div class={[
@@ -178,11 +182,14 @@ defmodule InventorySyncWeb.MetricsLive do
         <div class="p-2 bg-white/20 rounded-xl">
           <.icon name={@icon} class="w-6 h-6" />
         </div>
-        <div :if={@change} class={[
-          "text-xs font-medium px-2 py-1 rounded-full",
-          @change >= 0 && "bg-white/20 text-white",
-          @change < 0 && "bg-red-400/30 text-red-100"
-        ]}>
+        <div
+          :if={@change}
+          class={[
+            "text-xs font-medium px-2 py-1 rounded-full",
+            @change >= 0 && "bg-white/20 text-white",
+            @change < 0 && "bg-red-400/30 text-red-100"
+          ]}
+        >
           {if @change >= 0, do: "+", else: ""}{@change}%
         </div>
       </div>
@@ -196,9 +203,14 @@ defmodule InventorySyncWeb.MetricsLive do
 
   defp health_indicator(assigns) do
     status_classes = %{
-      :healthy => {"bg-green-100 dark:bg-green-900/30", "text-green-600 dark:text-green-400", "bg-green-500"},
-      :degraded => {"bg-yellow-100 dark:bg-yellow-900/30", "text-yellow-600 dark:text-yellow-400", "bg-yellow-500"},
-      :unhealthy => {"bg-red-100 dark:bg-red-900/30", "text-red-600 dark:text-red-400", "bg-red-500"}
+      :healthy =>
+        {"bg-green-100 dark:bg-green-900/30", "text-green-600 dark:text-green-400",
+         "bg-green-500"},
+      :degraded =>
+        {"bg-yellow-100 dark:bg-yellow-900/30", "text-yellow-600 dark:text-yellow-400",
+         "bg-yellow-500"},
+      :unhealthy =>
+        {"bg-red-100 dark:bg-red-900/30", "text-red-600 dark:text-red-400", "bg-red-500"}
     }
 
     {bg, text, dot} = Map.get(status_classes, assigns.status, status_classes[:healthy])
@@ -237,11 +249,12 @@ defmodule InventorySyncWeb.MetricsLive do
     total_syncs = Inventory.count_total_syncs()
     successful_syncs = Inventory.count_successful_syncs()
 
-    success_rate = if total_syncs > 0 do
-      Float.round(successful_syncs / total_syncs * 100, 1)
-    else
-      100.0
-    end
+    success_rate =
+      if total_syncs > 0 do
+        Float.round(successful_syncs / total_syncs * 100, 1)
+      else
+        100.0
+      end
 
     %{
       total_syncs: total_syncs,
@@ -276,10 +289,12 @@ defmodule InventorySyncWeb.MetricsLive do
     |> Enum.filter(& &1.active)
     |> Enum.map(fn channel ->
       stats = Inventory.get_channel_sync_stats(channel.id)
+
       %{
         name: channel.name,
         sync_count: stats.total,
-        success_rate: if(stats.total > 0, do: Float.round(stats.success / stats.total * 100, 1), else: 100.0)
+        success_rate:
+          if(stats.total > 0, do: Float.round(stats.success / stats.total * 100, 1), else: 100.0)
       }
     end)
   end

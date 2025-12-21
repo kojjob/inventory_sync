@@ -19,8 +19,8 @@
         </div>
       </div>
     </div>
-
-    <!-- Main Split Panel -->
+    
+<!-- Main Split Panel -->
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden grid lg:grid-cols-2 border border-slate-700/50">
       <!-- Left Panel - Form -->
       <div class="p-8 sm:p-12 lg:p-16">
@@ -28,13 +28,18 @@
         <div class="flex items-center gap-3 mb-8">
           <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+              />
             </svg>
           </div>
           <h1 class="text-2xl font-bold text-white">InventorySync</h1>
         </div>
-
-        <!-- Welcome Text -->
+        
+<!-- Welcome Text -->
         <div class="mb-8">
           <%= if @current_scope do %>
             <h2 class="text-3xl font-bold text-white mb-2">Reauthenticate</h2>
@@ -44,8 +49,8 @@
             <p id="auth-subtitle" class="text-slate-400">We Are Happy To See You Again</p>
           <% end %>
         </div>
-
-        <!-- Tab Navigation -->
+        
+<!-- Tab Navigation -->
         <div class="flex gap-2 mb-8">
           <button
             id="signin-tab"
@@ -62,8 +67,8 @@
             Sign Up
           </button>
         </div>
-
-        <!-- Sign In Form -->
+        
+<!-- Sign In Form -->
         <div id="signin-form" style="display: block;">
           <.form
             :let={f}
@@ -91,8 +96,8 @@
                 </div>
               </div>
             </div>
-
-            <!-- Password Input -->
+            
+<!-- Password Input -->
             <div>
               <div class="relative">
                 <.input
@@ -107,8 +112,8 @@
                 </div>
               </div>
             </div>
-
-            <!-- Remember Me & Forgot Password -->
+            
+<!-- Remember Me & Forgot Password -->
             <div class="flex items-center justify-between">
               <label class="flex items-center cursor-pointer group">
                 <input
@@ -128,8 +133,8 @@
                 Forgot Password?
               </.link>
             </div>
-
-            <!-- Login Button -->
+            
+<!-- Login Button -->
             <button
               type="submit"
               name={f[:remember_me].name}
@@ -139,8 +144,8 @@
               Login
             </button>
           </.form>
-
-          <!-- Divider -->
+          
+<!-- Divider -->
           <div class="relative my-8">
             <div class="absolute inset-0 flex items-center">
               <div class="w-full border-t border-slate-600"></div>
@@ -151,8 +156,8 @@
               </span>
             </div>
           </div>
-
-          <!-- Social Login Buttons -->
+          
+<!-- Social Login Buttons -->
           <div class="space-y-3">
             <button
               type="button"
@@ -187,8 +192,8 @@
               Log in with Google
             </button>
           </div>
-
-          <!-- Magic Link Alternative -->
+          
+<!-- Magic Link Alternative -->
           <details class="mt-8">
             <summary class="text-sm text-slate-400 hover:text-white cursor-pointer font-medium">
               Prefer passwordless login?
@@ -224,8 +229,8 @@
             </.form>
           </details>
         </div>
-
-        <!-- Sign Up Form -->
+        
+<!-- Sign Up Form -->
         <div id="signup-form" style="display: none;">
           <.form
             :let={f}
@@ -255,8 +260,8 @@
                 We'll send you a magic link to verify your email
               </p>
             </div>
-
-            <!-- Password Input -->
+            
+<!-- Password Input -->
             <div>
               <div class="relative">
                 <.input
@@ -274,8 +279,8 @@
                 Or use magic link authentication for password-less login
               </p>
             </div>
-
-            <!-- Terms Agreement -->
+            
+<!-- Terms Agreement -->
             <div class="rounded-xl bg-slate-700/30 p-4 border border-slate-600/50">
               <p class="text-xs text-slate-400 leading-relaxed">
                 By creating an account, you agree to our
@@ -288,8 +293,8 @@
                 </a>
               </p>
             </div>
-
-            <!-- Submit Button -->
+            
+<!-- Submit Button -->
             <button
               type="submit"
               phx-disable-with="Creating account..."
@@ -298,8 +303,8 @@
               Create Account
             </button>
           </.form>
-
-          <!-- Features List -->
+          
+<!-- Features List -->
           <div class="mt-8 pt-6 border-t border-slate-700">
             <p class="text-xs font-medium text-slate-500 mb-3 uppercase tracking-wide">
               What you'll get
@@ -327,8 +332,8 @@
           </div>
         </div>
       </div>
-
-      <!-- Right Panel - Gradient Artwork -->
+      
+<!-- Right Panel - Gradient Artwork -->
       <div class="hidden lg:flex relative bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 overflow-hidden">
         <!-- Animated Gradient Overlay -->
         <div class="absolute inset-0 opacity-30">
@@ -341,8 +346,8 @@
           <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000">
           </div>
         </div>
-
-        <!-- Wave Pattern SVG -->
+        
+<!-- Wave Pattern SVG -->
         <svg
           class="absolute inset-0 w-full h-full opacity-20"
           viewBox="0 0 1200 800"
@@ -383,8 +388,8 @@
             />
           </path>
         </svg>
-
-        <!-- Content -->
+        
+<!-- Content -->
         <div class="relative z-10 flex flex-col justify-end p-12 text-white">
           <div class="max-w-md">
             <h3 class="text-3xl font-bold mb-4 drop-shadow-lg">
@@ -394,8 +399,8 @@
               Real-time synchronization for Shopify, Etsy, Amazon, and more. Manage your multi-channel inventory from one powerful platform.
             </p>
           </div>
-
-          <!-- Copyright Footer -->
+          
+<!-- Copyright Footer -->
           <div class="mt-auto pt-8 border-t border-white/20">
             <p class="text-sm text-emerald-100">
               © 2024 InventorySync. All rights reserved.

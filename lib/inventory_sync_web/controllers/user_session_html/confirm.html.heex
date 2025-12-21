@@ -1,8 +1,13 @@
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 sm:px-6 lg:px-8 py-12">
   <!-- Animated background blobs -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse">
+    </div>
+    <div
+      class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-pulse"
+      style="animation-delay: 1s;"
+    >
+    </div>
   </div>
 
   <div class="w-full max-w-md relative z-10">
@@ -18,8 +23,8 @@
         Welcome {@user.email}
       </p>
     </div>
-
-    <!-- Main Card -->
+    
+<!-- Main Card -->
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-emerald-500/5">
       <div class="p-8">
         <!-- Unconfirmed State - Confirm Email -->
@@ -66,8 +71,8 @@
             Confirm and log in only this time
           </button>
         </.form>
-
-        <!-- Already Confirmed State - Login Options -->
+        
+<!-- Already Confirmed State - Login Options -->
         <.form
           :if={@user.confirmed_at}
           for={@form}
@@ -122,8 +127,8 @@
             </button>
           <% end %>
         </.form>
-
-        <!-- Password Tip -->
+        
+<!-- Password Tip -->
         <div
           :if={!@user.confirmed_at}
           class="mt-8 rounded-2xl bg-amber-900/30 border border-amber-700/50 p-4"
@@ -143,8 +148,8 @@
         </div>
       </div>
     </div>
-
-    <!-- Security Notice -->
+    
+<!-- Security Notice -->
     <p class="mt-6 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
       <.icon name="hero-shield-check" class="w-4 h-4" />
       <span>Secure email confirmation</span>

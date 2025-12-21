@@ -723,17 +723,19 @@ defmodule InventorySync.Inventory do
     channel = get_channel(channel_id)
     channel_name = if channel, do: channel.name, else: ""
 
-    total = Repo.one(
-      from s in SyncHistory,
-      where: s.channel_name == ^channel_name,
-      select: count(s.id)
-    ) || 0
+    total =
+      Repo.one(
+        from s in SyncHistory,
+          where: s.channel_name == ^channel_name,
+          select: count(s.id)
+      ) || 0
 
-    success = Repo.one(
-      from s in SyncHistory,
-      where: s.channel_name == ^channel_name and s.status == "success",
-      select: count(s.id)
-    ) || 0
+    success =
+      Repo.one(
+        from s in SyncHistory,
+          where: s.channel_name == ^channel_name and s.status == "success",
+          select: count(s.id)
+      ) || 0
 
     %{total: total, success: success}
   end

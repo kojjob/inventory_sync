@@ -82,24 +82,36 @@ defmodule InventorySyncWeb.Layouts do
         <.link href={~p"/"} class="flex items-center gap-2 hover:opacity-90 transition-opacity">
           <.logo size="md" />
         </.link>
-
-        <!-- Desktop Navigation -->
+        
+    <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center gap-8">
-          <a href="#features" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+          <a
+            href="#features"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline"
+          >
             Features
           </a>
-          <a href="#pricing" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+          <a
+            href="#pricing"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline"
+          >
             Pricing
           </a>
-          <a href="#testimonials" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+          <a
+            href="#testimonials"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline"
+          >
             Testimonials
           </a>
-          <a href="#faq" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline">
+          <a
+            href="#faq"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm hover-underline"
+          >
             FAQ
           </a>
         </div>
-
-        <!-- Auth Actions -->
+        
+    <!-- Auth Actions -->
         <div class="flex items-center gap-4">
           <%= if @current_scope do %>
             <span class="text-slate-400 text-sm hidden sm:inline">
@@ -132,33 +144,50 @@ defmodule InventorySyncWeb.Layouts do
               Get Started Free
             </.link>
           <% end %>
-
-          <!-- Mobile Menu Button -->
+          
+    <!-- Mobile Menu Button -->
           <button
             class="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
             onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
             aria-label="Toggle mobile menu"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </div>
       </div>
-
-      <!-- Mobile Menu -->
+      
+    <!-- Mobile Menu -->
       <div id="mobile-menu" class="hidden md:hidden mt-4 pt-4 border-t border-slate-700/50">
         <div class="flex flex-col gap-4">
-          <a href="#features" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+          <a
+            href="#features"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2"
+          >
             Features
           </a>
-          <a href="#pricing" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+          <a
+            href="#pricing"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2"
+          >
             Pricing
           </a>
-          <a href="#testimonials" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+          <a
+            href="#testimonials"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2"
+          >
             Testimonials
           </a>
-          <a href="#faq" class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2">
+          <a
+            href="#faq"
+            class="text-slate-300 hover:text-emerald-400 transition-colors font-medium text-sm py-2"
+          >
             FAQ
           </a>
           <%= unless @current_scope do %>
@@ -190,8 +219,10 @@ defmodule InventorySyncWeb.Layouts do
     ]}>
       <!-- Subtle background decoration -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl">
+        </div>
+        <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl">
+        </div>
       </div>
 
       <div class="max-w-7xl mx-auto relative z-10">
@@ -215,130 +246,283 @@ defmodule InventorySyncWeb.Layouts do
                   />
                   <button class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
                     </svg>
                   </button>
                 </div>
               </div>
             </div>
-
-            <!-- Product Column -->
+            
+    <!-- Product Column -->
             <div>
               <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Product</h4>
               <ul class="space-y-3">
                 <li>
-                  <a href="#features" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#features"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Features</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Integrations</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#pricing" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#pricing"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Pricing</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Changelog</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
               </ul>
             </div>
-
-            <!-- Company Column -->
+            
+    <!-- Company Column -->
             <div>
               <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Company</h4>
               <ul class="space-y-3">
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>About</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Blog</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Careers</span>
-                    <span class="ml-1 px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded">Hiring</span>
+                    <span class="ml-1 px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded">
+                      Hiring
+                    </span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Contact</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
               </ul>
             </div>
-
-            <!-- Legal Column -->
+            
+    <!-- Legal Column -->
             <div>
               <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Legal</h4>
               <ul class="space-y-3">
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Privacy Policy</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Terms of Service</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>Cookie Policy</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
                 <li>
-                  <a href="#" class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group">
+                  <a
+                    href="#"
+                    class="text-sm text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1 group"
+                  >
                     <span>GDPR</span>
-                    <svg class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </li>
               </ul>
             </div>
           </div>
-
-          <!-- Bottom Bar -->
+          
+    <!-- Bottom Bar -->
           <div class="pt-8 border-t border-slate-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               <p class="text-sm text-slate-500">
@@ -388,7 +572,7 @@ defmodule InventorySyncWeb.Layouts do
                 aria-label="YouTube"
               >
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               </a>
             </div>
@@ -442,8 +626,7 @@ defmodule InventorySyncWeb.Layouts do
           class={
             if(@active,
               do: "h-5 w-5 shrink-0 transition-colors text-emerald-400",
-              else:
-                "h-5 w-5 shrink-0 transition-colors text-slate-400 group-hover:text-emerald-400"
+              else: "h-5 w-5 shrink-0 transition-colors text-slate-400 group-hover:text-emerald-400"
             )
           }
         />
@@ -475,7 +658,8 @@ defmodule InventorySyncWeb.Layouts do
               "success" -> "bg-emerald-400"
               _ -> "bg-blue-400"
             end
-          ]}></span>
+          ]}>
+          </span>
           <p class="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">
             {@title}
           </p>

@@ -46,8 +46,8 @@
             <.icon name="hero-x-mark" class="h-6 w-6 text-white" />
           </button>
         </div>
-
-        <!-- Mobile Sidebar Content -->
+        
+<!-- Mobile Sidebar Content -->
         <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-slate-800 border-r border-slate-700/50 px-6 pb-4">
           <div class="flex h-16 shrink-0 items-center">
             <.logo size="md" />
@@ -57,7 +57,11 @@
               <li>
                 <ul role="list" class="-mx-2 space-y-1">
                   <li>
-                    <.sidebar_link href="/dashboard" active={@current_path == "/dashboard"} icon="hero-home">
+                    <.sidebar_link
+                      href="/dashboard"
+                      active={@current_path == "/dashboard"}
+                      icon="hero-home"
+                    >
                       Dashboard
                     </.sidebar_link>
                   </li>
@@ -80,7 +84,11 @@
                     </.sidebar_link>
                   </li>
                   <li>
-                    <.sidebar_link href="/metrics" active={@current_path == "/metrics"} icon="hero-chart-bar">
+                    <.sidebar_link
+                      href="/metrics"
+                      active={@current_path == "/metrics"}
+                      icon="hero-chart-bar"
+                    >
                       Metrics
                     </.sidebar_link>
                   </li>
@@ -116,11 +124,11 @@
                 <%= if @current_scope do %>
                   <div class="flex items-center gap-3 mb-4 px-2">
                     <div class="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-emerald-500/25">
-                      <%= String.first(@current_scope.user.email) |> String.upcase() %>
+                      {String.first(@current_scope.user.email) |> String.upcase()}
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-sm font-medium text-white truncate">
-                        <%= @current_scope.user.email %>
+                        {@current_scope.user.email}
                       </p>
                       <p class="text-xs text-slate-400">Account</p>
                     </div>
@@ -141,8 +149,8 @@
       </div>
     </div>
   </div>
-
-  <!-- Desktop Sidebar -->
+  
+<!-- Desktop Sidebar -->
   <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col sidebar-panel">
     <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-slate-800/50 backdrop-blur-sm border-r border-slate-700/50 px-6 pb-4">
       <div class="flex h-16 shrink-0 items-center">
@@ -155,7 +163,11 @@
           <li>
             <ul role="list" class="-mx-2 space-y-1">
               <li>
-                <.sidebar_link href="/dashboard" active={@current_path == "/dashboard"} icon="hero-home">
+                <.sidebar_link
+                  href="/dashboard"
+                  active={@current_path == "/dashboard"}
+                  icon="hero-home"
+                >
                   Dashboard
                 </.sidebar_link>
               </li>
@@ -224,8 +236,8 @@
       </nav>
     </div>
   </div>
-
-  <!-- Main Content Area (Offset) -->
+  
+<!-- Main Content Area (Offset) -->
   <div class="flex flex-col min-h-screen lg:pl-72 app-content">
     <!-- Sticky Top Header -->
     <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-sm px-4 shadow-lg shadow-slate-900/20 sm:gap-x-6 sm:px-6 lg:px-8">
@@ -245,8 +257,8 @@
         <span class="sr-only">Open sidebar</span>
         <.icon name="hero-bars-3" class="h-6 w-6" />
       </button>
-
-      <!-- Separator -->
+      
+<!-- Separator -->
       <div class="h-6 w-px bg-slate-700 lg:hidden" aria-hidden="true"></div>
 
       <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
@@ -260,8 +272,8 @@
         >
           <.icon name="hero-bars-3-bottom-left" class="h-5 w-5" />
         </button>
-
-        <!-- Search Bar -->
+        
+<!-- Search Bar -->
         <form class="relative flex flex-1" action="#" method="GET">
           <label for="search-field" class="sr-only">Search</label>
           <.icon
@@ -322,15 +334,15 @@
               </div>
             </div>
           </div>
-
-          <!-- Separator -->
+          
+<!-- Separator -->
           <div
             class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-700"
             aria-hidden="true"
           >
           </div>
-
-          <!-- User Profile -->
+          
+<!-- User Profile -->
           <div class="relative group">
             <button
               type="button"
@@ -342,14 +354,14 @@
               <span class="sr-only">Open user menu</span>
               <%= if @current_scope do %>
                 <div class="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-semibold text-sm shadow-lg shadow-emerald-500/25">
-                  <%= String.first(@current_scope.user.email) |> String.upcase() %>
+                  {String.first(@current_scope.user.email) |> String.upcase()}
                 </div>
                 <span class="hidden lg:flex lg:items-center">
                   <span
                     class="ml-3 text-sm font-medium leading-6 text-white max-w-[150px] truncate"
                     aria-hidden="true"
                   >
-                    <%= @current_scope.user.email %>
+                    {@current_scope.user.email}
                   </span>
                   <.icon name="hero-chevron-down" class="ml-2 h-4 w-4 text-slate-400" />
                 </span>
@@ -364,7 +376,7 @@
               <%= if @current_scope do %>
                 <div class="px-4 py-3 border-b border-slate-700/50">
                   <p class="text-sm font-medium text-white truncate">
-                    <%= @current_scope.user.email %>
+                    {@current_scope.user.email}
                   </p>
                   <p class="text-xs text-slate-400 mt-0.5">Manage your account</p>
                 </div>
@@ -374,22 +386,19 @@
                   href={~p"/users/settings"}
                   class="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
                 >
-                  <.icon name="hero-user-circle" class="h-5 w-5 text-slate-400" />
-                  Your Profile
+                  <.icon name="hero-user-circle" class="h-5 w-5 text-slate-400" /> Your Profile
                 </a>
                 <a
                   href={~p"/users/settings"}
                   class="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
                 >
-                  <.icon name="hero-cog-6-tooth" class="h-5 w-5 text-slate-400" />
-                  Settings
+                  <.icon name="hero-cog-6-tooth" class="h-5 w-5 text-slate-400" /> Settings
                 </a>
                 <a
                   href="#"
                   class="flex items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
                 >
-                  <.icon name="hero-credit-card" class="h-5 w-5 text-slate-400" />
-                  Billing
+                  <.icon name="hero-credit-card" class="h-5 w-5 text-slate-400" /> Billing
                 </a>
               </div>
               <div class="border-t border-slate-700/50 py-2">
@@ -398,8 +407,7 @@
                   method="delete"
                   class="flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
                 >
-                  <.icon name="hero-arrow-right-on-rectangle" class="h-5 w-5" />
-                  Sign out
+                  <.icon name="hero-arrow-right-on-rectangle" class="h-5 w-5" /> Sign out
                 </.link>
               </div>
             </div>
@@ -407,16 +415,16 @@
         </div>
       </div>
     </div>
-
-    <!-- Main Content -->
+    
+<!-- Main Content -->
     <main class="flex-1 py-8">
       <div class="px-4 sm:px-6 lg:px-8">
         <.flash_group flash={@flash} />
         {@inner_content}
       </div>
     </main>
-
-    <!-- App Footer -->
+    
+<!-- App Footer -->
     <.footer variant="minimal" class="lg:ml-0" />
   </div>
 </div>
