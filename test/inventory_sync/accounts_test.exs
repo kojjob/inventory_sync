@@ -403,10 +403,20 @@ defmodule InventorySync.AccountsTest do
       %{inviting_user: inviting_user, email: email, team_member_params: team_member_params}
     end
 
-    test "creates team member with Invited status", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+    test "creates team member with Invited status", %{
+      inviting_user: inviting_user,
+      email: email,
+      team_member_params: team_member_params
+    } do
       invitation_url_fun = fn _token -> "http://example.com/invitations/accept/token" end
 
-      {:ok, {team_member, _email}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, invitation_url_fun)
+      {:ok, {team_member, _email}} =
+        Accounts.deliver_team_invitation(
+          email,
+          team_member_params,
+          inviting_user,
+          invitation_url_fun
+        )
 
       assert team_member.email == email
       assert team_member.role == "Admin"
@@ -415,11 +425,17 @@ defmodule InventorySync.AccountsTest do
       assert is_nil(team_member.user_id)
     end
 
-    test "creates invitation token", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+    test "creates invitation token", %{
+      inviting_user: inviting_user,
+      email: email,
+      team_member_params: team_member_params
+    } do
       # Extract token from email
       token =
         extract_user_token(fn url ->
-          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          {:ok, {_team_member, email_struct}} =
+            Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+
           email_struct
         end)
 
@@ -431,33 +447,64 @@ defmodule InventorySync.AccountsTest do
       assert user_token.sent_to == email
     end
 
-    test "sends invitation email", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+    test "sends invitation email", %{
+      inviting_user: inviting_user,
+      email: email,
+      team_member_params: team_member_params
+    } do
       token =
         extract_user_token(fn url ->
-          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          {:ok, {_team_member, email_struct}} =
+            Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+
           email_struct
         end)
 
       assert token
     end
 
-    test "returns error for invalid email", %{inviting_user: inviting_user, team_member_params: team_member_params} do
+    test "returns error for invalid email", %{
+      inviting_user: inviting_user,
+      team_member_params: team_member_params
+    } do
       invalid_params = Map.put(team_member_params, "email", "invalid")
       invitation_url_fun = fn _token -> "http://example.com/invitations/accept/token" end
 
-      {:error, changeset} = Accounts.deliver_team_invitation("invalid", invalid_params, inviting_user, invitation_url_fun)
+      {:error, changeset} =
+        Accounts.deliver_team_invitation(
+          "invalid",
+          invalid_params,
+          inviting_user,
+          invitation_url_fun
+        )
 
       assert %{email: ["must be a valid email"]} = errors_on(changeset)
     end
 
-    test "returns error for duplicate email", %{inviting_user: inviting_user, email: email, team_member_params: team_member_params} do
+    test "returns error for duplicate email", %{
+      inviting_user: inviting_user,
+      email: email,
+      team_member_params: team_member_params
+    } do
       invitation_url_fun = fn _token -> "http://example.com/invitations/accept/token" end
 
       # Create first invitation
-      {:ok, {_team_member, _email}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, invitation_url_fun)
+      {:ok, {_team_member, _email}} =
+        Accounts.deliver_team_invitation(
+          email,
+          team_member_params,
+          inviting_user,
+          invitation_url_fun
+        )
 
       # Try to create duplicate
-      {:error, changeset} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, invitation_url_fun)
+      {:error, changeset} =
+        Accounts.deliver_team_invitation(
+          email,
+          team_member_params,
+          inviting_user,
+          invitation_url_fun
+        )
 
       assert "has already been taken" in errors_on(changeset).email
     end
@@ -471,7 +518,9 @@ defmodule InventorySync.AccountsTest do
 
       token =
         extract_user_token(fn url ->
-          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          {:ok, {_team_member, email_struct}} =
+            Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+
           email_struct
         end)
 
@@ -515,7 +564,9 @@ defmodule InventorySync.AccountsTest do
 
       token =
         extract_user_token(fn url ->
-          {:ok, {_team_member, email_struct}} = Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+          {:ok, {_team_member, email_struct}} =
+            Accounts.deliver_team_invitation(email, team_member_params, inviting_user, url)
+
           email_struct
         end)
 
@@ -526,25 +577,33 @@ defmodule InventorySync.AccountsTest do
     end
 
     test "links user to team member", %{team_member: team_member, accepting_user: accepting_user} do
-      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+      {:ok, updated_team_member} =
+        Accounts.accept_team_invitation(team_member, accepting_user, %{})
 
       assert updated_team_member.user_id == accepting_user.id
     end
 
     test "updates status to Active", %{team_member: team_member, accepting_user: accepting_user} do
-      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+      {:ok, updated_team_member} =
+        Accounts.accept_team_invitation(team_member, accepting_user, %{})
 
       assert updated_team_member.status == "Active"
     end
 
     test "updates name if provided", %{team_member: team_member, accepting_user: accepting_user} do
-      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{"name" => "John Doe"})
+      {:ok, updated_team_member} =
+        Accounts.accept_team_invitation(team_member, accepting_user, %{"name" => "John Doe"})
 
       assert updated_team_member.name == "John Doe"
     end
 
-    test "deletes invitation token", %{team_member: team_member, accepting_user: accepting_user, token: token} do
-      {:ok, _updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+    test "deletes invitation token", %{
+      team_member: team_member,
+      accepting_user: accepting_user,
+      token: token
+    } do
+      {:ok, _updated_team_member} =
+        Accounts.accept_team_invitation(team_member, accepting_user, %{})
 
       # Token should be deleted
       refute Accounts.get_team_member_by_invitation_token(token)
@@ -555,19 +614,29 @@ defmodule InventorySync.AccountsTest do
       refute Repo.get_by(UserToken, token: hashed_token)
     end
 
-    test "returns error if team member already has a user", %{team_member: team_member, accepting_user: accepting_user} do
+    test "returns error if team member already has a user", %{
+      team_member: team_member,
+      accepting_user: accepting_user
+    } do
       # Accept invitation first time
-      {:ok, accepted_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+      {:ok, accepted_team_member} =
+        Accounts.accept_team_invitation(team_member, accepting_user, %{})
 
       # Try to accept again with different user (using the updated team_member with user_id set)
       another_user = user_fixture()
-      {:error, changeset} = Accounts.accept_team_invitation(accepted_team_member, another_user, %{})
+
+      {:error, changeset} =
+        Accounts.accept_team_invitation(accepted_team_member, another_user, %{})
 
       assert "has already been accepted" in errors_on(changeset).user_id
     end
 
-    test "preserves role and title from invitation", %{team_member: team_member, accepting_user: accepting_user} do
-      {:ok, updated_team_member} = Accounts.accept_team_invitation(team_member, accepting_user, %{})
+    test "preserves role and title from invitation", %{
+      team_member: team_member,
+      accepting_user: accepting_user
+    } do
+      {:ok, updated_team_member} =
+        Accounts.accept_team_invitation(team_member, accepting_user, %{})
 
       assert updated_team_member.role == "Editor"
       assert updated_team_member.title == "Developer"

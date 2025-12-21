@@ -43,16 +43,26 @@ defmodule InventorySync.InventoryFixtures do
   end
 
   @doc """
+  Generate a unique external_id.
+  """
+  def unique_external_id, do: "external_id#{System.unique_integer([:positive])}"
+
+  @doc """
   Generate a inventory_item.
   """
   def inventory_item_fixture(attrs \\ %{}) do
-    channel = attrs[:channel_id] && InventorySync.Inventory.get_channel!(attrs[:channel_id]) || channel_fixture()
-    product = attrs[:product_id] && InventorySync.Inventory.get_product!(attrs[:product_id]) || product_fixture()
+    channel =
+      (attrs[:channel_id] && InventorySync.Inventory.get_channel!(attrs[:channel_id])) ||
+        channel_fixture()
+
+    product =
+      (attrs[:product_id] && InventorySync.Inventory.get_product!(attrs[:product_id])) ||
+        product_fixture()
 
     {:ok, inventory_item} =
       attrs
       |> Enum.into(%{
-        external_id: "some external_id",
+        external_id: unique_external_id(),
         platform_sku: "some platform_sku",
         quantity: 42,
         channel_id: channel.id,
@@ -61,5 +71,21 @@ defmodule InventorySync.InventoryFixtures do
       |> InventorySync.Inventory.create_inventory_item()
 
     inventory_item
+  end
+
+  @doc """
+  Generate a team_member.
+  """
+  def team_member_fixture(attrs \\ %{}) do
+    {:ok, team_member} =
+      attrs
+      |> Enum.into(%{
+        name: "Team Member #{System.unique_integer([:positive])}",
+        email: "member#{System.unique_integer([:positive])}@example.com",
+        role: "viewer"
+      })
+      |> InventorySync.Inventory.create_team_member()
+
+    team_member
   end
 end

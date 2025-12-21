@@ -5,6 +5,8 @@ defmodule InventorySync.Inventory do
 
   import Ecto.Query, warn: false
   alias InventorySync.Repo
+  alias InventorySync.Audit
+  alias InventorySync.Accounts.User
 
   alias InventorySync.Inventory.Channel
 
@@ -100,6 +102,82 @@ defmodule InventorySync.Inventory do
   """
   def change_channel(%Channel{} = channel, attrs \\ %{}) do
     Channel.changeset(channel, attrs)
+  end
+
+  # ============================================================================
+  # Audit-aware Channel Operations
+  # ============================================================================
+
+  @doc """
+  Creates a channel and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> create_channel_with_audit(%{field: value}, user)
+      {:ok, %Channel{}}
+
+  """
+  def create_channel_with_audit(attrs, %User{} = user) do
+    case create_channel(attrs) do
+      {:ok, channel} ->
+        changes = Audit.calculate_changes(nil, Map.take(attrs, [:name, :platform]))
+        Audit.log_action(user, "created", channel, changes)
+        {:ok, channel}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Updates a channel and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> update_channel_with_audit(channel, %{field: new_value}, user)
+      {:ok, %Channel{}}
+
+  """
+  def update_channel_with_audit(%Channel{} = channel, attrs, %User{} = user) do
+    old_attrs = Map.take(channel, [:name, :platform, :active])
+
+    case update_channel(channel, attrs) do
+      {:ok, updated_channel} ->
+        new_attrs = Map.take(updated_channel, [:name, :platform, :active])
+        changes = Audit.calculate_changes(old_attrs, new_attrs)
+
+        unless changes == %{} do
+          Audit.log_action(user, "updated", updated_channel, changes)
+        end
+
+        {:ok, updated_channel}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Deletes a channel and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> delete_channel_with_audit(channel, user)
+      {:ok, %Channel{}}
+
+  """
+  def delete_channel_with_audit(%Channel{} = channel, %User{} = user) do
+    # Log before delete since we need the channel ID
+    changes = %{"deleted" => %{"from" => false, "to" => true}}
+
+    case delete_channel(channel) do
+      {:ok, deleted_channel} ->
+        Audit.log_action(user, "deleted", deleted_channel, changes)
+        {:ok, deleted_channel}
+
+      error ->
+        error
+    end
   end
 
   alias InventorySync.Inventory.Product
@@ -198,6 +276,81 @@ defmodule InventorySync.Inventory do
     Product.changeset(product, attrs)
   end
 
+  # ============================================================================
+  # Audit-aware Product Operations
+  # ============================================================================
+
+  @doc """
+  Creates a product and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> create_product_with_audit(%{field: value}, user)
+      {:ok, %Product{}}
+
+  """
+  def create_product_with_audit(attrs, %User{} = user) do
+    case create_product(attrs) do
+      {:ok, product} ->
+        changes = Audit.calculate_changes(nil, Map.take(attrs, [:sku, :name, :total_quantity]))
+        Audit.log_action(user, "created", product, changes)
+        {:ok, product}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Updates a product and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> update_product_with_audit(product, %{field: new_value}, user)
+      {:ok, %Product{}}
+
+  """
+  def update_product_with_audit(%Product{} = product, attrs, %User{} = user) do
+    old_attrs = Map.take(product, [:sku, :name, :total_quantity])
+
+    case update_product(product, attrs) do
+      {:ok, updated_product} ->
+        new_attrs = Map.take(updated_product, [:sku, :name, :total_quantity])
+        changes = Audit.calculate_changes(old_attrs, new_attrs)
+
+        unless changes == %{} do
+          Audit.log_action(user, "updated", updated_product, changes)
+        end
+
+        {:ok, updated_product}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Deletes a product and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> delete_product_with_audit(product, user)
+      {:ok, %Product{}}
+
+  """
+  def delete_product_with_audit(%Product{} = product, %User{} = user) do
+    changes = %{"deleted" => %{"from" => false, "to" => true}}
+
+    case delete_product(product) do
+      {:ok, deleted_product} ->
+        Audit.log_action(user, "deleted", deleted_product, changes)
+        {:ok, deleted_product}
+
+      error ->
+        error
+    end
+  end
+
   alias InventorySync.Inventory.InventoryItem
 
   @doc """
@@ -211,6 +364,22 @@ defmodule InventorySync.Inventory do
   """
   def list_inventory_items do
     Repo.all(InventoryItem)
+  end
+
+  @doc """
+  Returns the list of inventory_items for a specific product with channels preloaded.
+
+  ## Examples
+
+      iex> list_inventory_items_for_product(product_id)
+      [%InventoryItem{}, ...]
+
+  """
+  def list_inventory_items_for_product(product_id) do
+    InventoryItem
+    |> where([i], i.product_id == ^product_id)
+    |> preload(:channel)
+    |> Repo.all()
   end
 
   @doc """
@@ -313,7 +482,12 @@ defmodule InventorySync.Inventory do
 
   def count_errors_today do
     today_start = DateTime.utc_now() |> DateTime.to_date() |> DateTime.new!(~T[00:00:00])
-    Repo.one(from s in SyncHistory, where: s.timestamp >= ^today_start and s.status == "error", select: count(s.id))
+
+    Repo.one(
+      from s in SyncHistory,
+        where: s.timestamp >= ^today_start and s.status == "error",
+        select: count(s.id)
+    )
   end
 
   @doc """
@@ -327,14 +501,16 @@ defmodule InventorySync.Inventory do
     |> Ecto.Multi.update(:product, Product.changeset(product, %{total_quantity: new_quantity}))
     |> Ecto.Multi.run(:inventory_items, fn repo, _ ->
       # 2. Get all linked inventory items
-      items = repo.all(from i in InventoryItem, where: i.product_id == ^product.id, preload: [:channel])
+      items =
+        repo.all(from i in InventoryItem, where: i.product_id == ^product.id, preload: [:channel])
 
       # 3. Update their local quantities (optional, depending on business logic if we want to mirror quantity exactly)
       # For now let's assume we mirror the total quantity to all channels
-      {_count, _updated_items} = repo.update_all(
-        from(i in InventoryItem, where: i.product_id == ^product.id, select: i),
-        set: [quantity: new_quantity, updated_at: DateTime.utc_now()]
-      )
+      {_count, _updated_items} =
+        repo.update_all(
+          from(i in InventoryItem, where: i.product_id == ^product.id, select: i),
+          set: [quantity: new_quantity, updated_at: DateTime.utc_now()]
+        )
 
       # Since update_all doesn't return preloads, we might need to reload or just use the IDs from `items`
       # A better approach for the broadcast step is to iterate over `items`
@@ -353,9 +529,11 @@ defmodule InventorySync.Inventory do
             {:sync_inventory, %{item | quantity: new_quantity}}
           )
         end)
+
         {:ok, product}
 
-      error -> error
+      error ->
+        error
     end
   end
 
@@ -419,5 +597,119 @@ defmodule InventorySync.Inventory do
 
   def change_team_member(%TeamMember{} = team_member, attrs \\ %{}) do
     TeamMember.changeset(team_member, attrs)
+  end
+
+  # ============================================================================
+  # Audit-aware TeamMember Operations
+  # ============================================================================
+
+  @doc """
+  Creates a team member (invite) and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> create_team_member_with_audit(%{field: value}, user)
+      {:ok, %TeamMember{}}
+
+  """
+  def create_team_member_with_audit(attrs, %User{} = user) do
+    case create_team_member(attrs) do
+      {:ok, team_member} ->
+        changes = Audit.calculate_changes(nil, Map.take(attrs, [:name, :email, :role]))
+        Audit.log_action(user, "invited", team_member, changes)
+        {:ok, team_member}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Updates a team member and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> update_team_member_with_audit(team_member, %{field: new_value}, user)
+      {:ok, %TeamMember{}}
+
+  """
+  def update_team_member_with_audit(%TeamMember{} = team_member, attrs, %User{} = user) do
+    old_attrs = Map.take(team_member, [:name, :email, :role])
+
+    case update_team_member(team_member, attrs) do
+      {:ok, updated_member} ->
+        new_attrs = Map.take(updated_member, [:name, :email, :role])
+        changes = Audit.calculate_changes(old_attrs, new_attrs)
+
+        unless changes == %{} do
+          Audit.log_action(user, "updated", updated_member, changes)
+        end
+
+        {:ok, updated_member}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Deletes a team member and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> delete_team_member_with_audit(team_member, user)
+      {:ok, %TeamMember{}}
+
+  """
+  def delete_team_member(%TeamMember{} = team_member) do
+    Repo.delete(team_member)
+  end
+
+  def delete_team_member_with_audit(%TeamMember{} = team_member, %User{} = user) do
+    changes = %{"deleted" => %{"from" => false, "to" => true}}
+
+    case delete_team_member(team_member) do
+      {:ok, deleted_member} ->
+        Audit.log_action(user, "deleted", deleted_member, changes)
+        {:ok, deleted_member}
+
+      error ->
+        error
+    end
+  end
+
+  # ============================================================================
+  # Audit-aware Settings Operations
+  # ============================================================================
+
+  @doc """
+  Updates a setting and logs the action to the audit trail.
+
+  ## Examples
+
+      iex> put_setting_with_audit("key", "value", user)
+      {:ok, %Setting{}}
+
+  """
+  def put_setting_with_audit(key, value, %User{} = user) do
+    old_value = get_setting(key)
+
+    case put_setting(key, value) do
+      {:ok, setting} ->
+        changes = %{"value" => %{"from" => old_value, "to" => value}}
+        # Use a special metadata for settings since they don't have a standard ID
+        Audit.create_audit_log(%{
+          action: "settings_changed",
+          resource_type: "setting",
+          resource_id: setting.id,
+          changes: %{key => changes},
+          user_id: user.id
+        })
+
+        {:ok, setting}
+
+      error ->
+        error
+    end
   end
 end

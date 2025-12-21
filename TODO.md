@@ -101,15 +101,55 @@ To build a robust, real-time **Multi-Channel Inventory Sync SaaS** (B2B). The pl
     - [x] Fixed webhook signature verification (proper conn threading)
     - [x] Added error handling for missing products (try/rescue Ecto.NoResultsError)
     - [x] Comprehensive test suite (6 tests passing)
-- [ ] **Email Infrastructure** (Est: 1h)
-    - [ ] Configure `Swoosh` (Local/SendGrid)
-    - [ ] Enable "Forgot Password" / "Invite User" emails
+- [x] **Email Infrastructure** (Est: 1h) ✅ **COMPLETED**
+    - [x] Configure `Swoosh` (Local/SendGrid)
+    - [x] Enable "Forgot Password" / "Invite User" emails
+    - [x] Password reset emails verified (8 tests passing)
+    - [x] Team invitation emails verified (5 tests passing)
+    - [x] Production configuration documented in config/runtime.exs
+
+### P1.5: DevOps (Should Have)
+- [ ] **CI/CD Pipeline** (Est: 2h) ⏳ **BLOCKED ON BILLING**
+    - [x] Created `.github/workflows/ci.yml` with comprehensive pipeline
+    - [x] Test job: PostgreSQL service, format check, compile, tests
+    - [x] Security job: dependency audit, hex.audit
+    - [x] Assets job: build verification
+    - [x] Configured `config/test.exs` for DATABASE_URL support
+    - [x] Workflow syntax validated (actionlint passes locally)
+    - [x] Cleaned up debugging workflows (test.yml, minimal.yml removed)
+    - [ ] **BLOCKED**: GitHub Actions returns `startup_failure` for all workflows
+    - **Root Cause**: Private repos on Free plan get ZERO CI minutes
+    - **Fix Required**:
+        1. Go to https://github.com/settings/billing/spending_limit
+        2. Set "Actions and Packages" spending limit to at least $1
+        3. Ensure valid payment method on file
+        4. Wait up to 24 hours for billing changes to propagate
+    - **Alternative**: Make repo public (public repos get unlimited free minutes)
+    - [ ] Verify CI runs green after billing propagates
+- [x] **Production Dockerfile** (Est: 1h) ✅ **COMPLETED**
+    - [x] Multi-stage Dockerfile (builder + runtime)
+    - [x] Elixir 1.15.7 / OTP 26.2.5 base images
+    - [x] Asset compilation (tailwind + esbuild)
+    - [x] Health check endpoint (`/health`, `/health/live`, `/health/ready`)
+    - [x] Docker Compose for local testing
+    - [x] .dockerignore to minimize build context
+    - [x] Release module for production migrations
+    - [x] Docker build + container verified working
+    - [x] 233 tests passing
 
 ### P2: Enhancements (Nice to Have)
-- [ ] **Product Mapping** (Est: 5h)
-    - [ ] UI to link different SKUs across channels
-- [ ] **Audit Logs** (Est: 2h)
-    - [ ] Track *who* changed a setting or invited a user
+- [x] **Product Mapping** (Est: 5h) ✅ **COMPLETED**
+    - [x] UI to link different SKUs across channels
+    - [x] `list_inventory_items_for_product/1` with channel preloading
+    - [x] ProductLive.Index tests (11 tests)
+    - [x] ProductLive.Show tests (12 tests)
+    - [x] All 23 Product Mapping tests passing
+- [x] **Audit Logs** (Est: 2h) ✅ **COMPLETED**
+    - [x] Track *who* changed a setting or invited a user
+    - [x] AuditLog schema with polymorphic resource tracking
+    - [x] Audit context with CRUD and query functions
+    - [x] Audit-aware wrapper functions for Channel, Product, TeamMember, Settings
+    - [x] 14 unit tests + 15 integration tests (all passing)
 
 ---
 

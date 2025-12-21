@@ -361,17 +361,20 @@ defmodule InventorySync.Accounts do
     {encoded_token, user_token} = UserToken.build_invitation_token(email)
 
     # Create the team member record with invited status
-    attrs = Map.merge(attrs, %{
-      "email" => email,
-      "invited_by_id" => inviting_user.id
-    })
+    attrs =
+      Map.merge(attrs, %{
+        "email" => email,
+        "invited_by_id" => inviting_user.id
+      })
 
     case Repo.insert(user_token) do
       {:ok, _token} ->
         # Create team member invitation
         case create_team_member_invitation(attrs) do
           {:ok, team_member} ->
-            email_struct = UserNotifier.deliver_team_invitation(email, invitation_url_fun.(encoded_token))
+            email_struct =
+              UserNotifier.deliver_team_invitation(email, invitation_url_fun.(encoded_token))
+
             {:ok, {team_member, email_struct}}
 
           {:error, changeset} ->
