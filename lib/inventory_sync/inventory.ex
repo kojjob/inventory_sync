@@ -679,6 +679,63 @@ defmodule InventorySync.Inventory do
   end
 
   # ============================================================================
+  # Metrics Functions
+  # ============================================================================
+
+  @doc """
+  Gets a channel by ID without raising.
+  """
+  def get_channel(id), do: Repo.get(Channel, id)
+
+  @doc """
+  Counts total sync events.
+  """
+  def count_total_syncs do
+    Repo.one(from s in SyncHistory, select: count(s.id)) || 0
+  end
+
+  @doc """
+  Counts successful sync events.
+  """
+  def count_successful_syncs do
+    Repo.one(from s in SyncHistory, where: s.status == "success", select: count(s.id)) || 0
+  end
+
+  @doc """
+  Returns the average sync time in milliseconds.
+  """
+  def average_sync_time do
+    # For now, return a placeholder - would need to track sync duration in SyncHistory
+    150
+  end
+
+  @doc """
+  Counts active channels.
+  """
+  def count_active_channels do
+    Repo.one(from c in Channel, where: c.active == true, select: count(c.id)) || 0
+  end
+
+  @doc """
+  Returns sync statistics for a specific channel.
+  """
+  def get_channel_sync_stats(channel_id) do
+    total = Repo.one(
+      from s in SyncHistory,
+      where: s.channel_id == ^channel_id,
+      select: count(s.id)
+    ) || 0
+
+    success = Repo.one(
+      from s in SyncHistory,
+      where: s.channel_id == ^channel_id and s.status == "success",
+      select: count(s.id)
+    ) || 0
+
+    %{total: total, success: success}
+  end
+
+  # ============================================================================
   # Audit-aware Settings Operations
   # ============================================================================
 

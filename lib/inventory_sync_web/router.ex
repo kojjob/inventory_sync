@@ -32,6 +32,7 @@ defmodule InventorySyncWeb.Router do
       live "/products", ProductLive.Index, :index
       live "/products/:id", ProductLive.Show, :show
       live "/channels", ChannelLive.Index, :index
+      live "/metrics", MetricsLive, :index
       live "/settings/general", SettingsLive.General, :index
       live "/settings/team", SettingsLive.Team, :index
       live "/activity", ActivityLive.Index, :index
