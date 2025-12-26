@@ -73,49 +73,57 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
   Rate limiting is applied per IP address for failed authentication attempts.
   """
   def call(conn, opts) do
-    # Check rate limit before processing the request
     client_ip = get_client_ip(conn)
     
-    case check_rate_limit(client_ip) do
-      {:allow, _count} ->
-        process_auth(conn, opts, client_ip)
+    # First, check if this IP has exceeded rate limits
+    case check_if_rate_limited(client_ip) do
+      :ok ->
+        # Process authentication
+        case do_auth(conn, opts) do
+          {:ok, conn} ->
+            # Success - don't increment rate limit counter
+            conn
+          
+          {:error, conn} ->
+            # Failed - increment rate limit counter
+            record_failed_attempt(client_ip)
+            conn
+        end
       
-      {:deny, _limit} ->
+      :rate_limited ->
         rate_limited(conn)
     end
   end
 
-  defp process_auth(conn, opts, client_ip) do
+  defp do_auth(conn, opts) do
     with {:ok, raw_token} <- extract_token(conn),
          {:ok, api_token} <- verify_token(raw_token),
          {:ok, api_token} <- check_scope(api_token, opts),
          {:ok, api_token} <- preload_user(api_token) do
-      conn
-      |> assign(:api_token, api_token)
-      |> assign(:current_user, api_token.user)
+      conn =
+        conn
+        |> assign(:api_token, api_token)
+        |> assign(:current_user, api_token.user)
+      
+      {:ok, conn}
     else
       {:error, :missing_token} ->
-        track_failed_attempt(client_ip)
-        unauthorized(conn, "Authorization header is missing")
+        {:error, unauthorized(conn, "Authorization header is missing")}
 
       {:error, :invalid_format} ->
-        track_failed_attempt(client_ip)
-        unauthorized(conn, "Authorization header must use Bearer scheme")
+        {:error, unauthorized(conn, "Authorization header must use Bearer scheme")}
 
       {:error, :invalid_token} ->
-        track_failed_attempt(client_ip)
-        unauthorized(conn, "Token is invalid")
+        {:error, unauthorized(conn, "Token is invalid")}
 
       {:error, :not_found} ->
-        track_failed_attempt(client_ip)
-        unauthorized(conn, "Token not found")
+        {:error, unauthorized(conn, "Token not found")}
 
       {:error, :token_expired} ->
-        track_failed_attempt(client_ip)
-        unauthorized(conn, "Token has expired")
+        {:error, unauthorized(conn, "Token has expired")}
 
       {:error, :insufficient_scope} ->
-        forbidden(conn, "Token lacks required scope")
+        {:error, forbidden(conn, "Token lacks required scope")}
     end
   end
 
@@ -176,16 +184,30 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
     end
   end
 
-  # Checks if the request is within rate limits using Hammer
-  defp check_rate_limit(client_ip) do
+  # Checks if the IP address has exceeded the rate limit (without incrementing)
+  defp check_if_rate_limited(client_ip) do
     bucket_key = "api_auth:#{client_ip}"
-    Hammer.check_rate(bucket_key, @rate_limit_scale, @rate_limit_limit)
+    
+    # Use inspect_bucket to check current count without incrementing
+    case Hammer.inspect_bucket(bucket_key, @rate_limit_scale, @rate_limit_limit) do
+      {:ok, {count, _count_remaining, _ms_to_next_bucket, _created_at, _updated_at}} ->
+        if count >= @rate_limit_limit do
+          :rate_limited
+        else
+          :ok
+        end
+      
+      # If bucket doesn't exist yet, allow the request
+      {:error, _} ->
+        :ok
+    end
   end
 
-  # Records a failed authentication attempt for rate limiting
-  defp track_failed_attempt(client_ip) do
-    # The failed attempt is already counted by check_rate_limit
-    # This function exists for clarity and potential future logging
+  # Records a failed authentication attempt
+  defp record_failed_attempt(client_ip) do
+    bucket_key = "api_auth:#{client_ip}"
+    # This will increment the counter for failed attempts
+    Hammer.check_rate(bucket_key, @rate_limit_scale, @rate_limit_limit)
     :ok
   end
 
