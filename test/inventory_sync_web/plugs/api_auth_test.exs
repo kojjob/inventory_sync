@@ -216,4 +216,124 @@ defmodule InventorySyncWeb.Plugs.ApiAuthTest do
       assert conn.assigns[:current_user].email == "preload-test@example.com"
     end
   end
+
+  describe "rate limiting" do
+    test "allows requests within rate limit" do
+      # Create a valid token
+      {:ok, user} =
+        %User{}
+        |> User.email_changeset(%{email: "rate-limit@example.com"})
+        |> InventorySync.Repo.insert()
+
+      attrs = %{
+        name: "Rate Limit Token",
+        scopes: ["read:products"],
+        user_id: user.id
+      }
+
+      {raw_token, api_token_struct} = ApiToken.build_token(attrs)
+      {:ok, _saved_token} = InventorySync.Repo.insert(api_token_struct)
+
+      # Make multiple requests within the limit (5 per minute)
+      for _ <- 1..4 do
+        conn =
+          build_conn()
+          |> put_req_header("authorization", "Bearer #{raw_token}")
+          |> ApiAuth.call(%{})
+
+        refute conn.halted
+        assert conn.assigns[:api_token] != nil
+      end
+    end
+
+    test "returns 429 when rate limit exceeded with invalid tokens" do
+      fake_token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
+
+      # Make requests to exceed the rate limit (5 failed attempts)
+      # The 6th request should be rate limited
+      for i <- 1..6 do
+        conn =
+          build_conn()
+          |> put_req_header("authorization", "Bearer #{fake_token}")
+          |> ApiAuth.call(%{})
+
+        assert conn.halted
+
+        if i <= 5 do
+          # First 5 attempts should return 401 (unauthorized)
+          assert conn.status == 401
+          body = Jason.decode!(conn.resp_body)
+          assert body["error"] == "unauthorized"
+        else
+          # 6th attempt should return 429 (rate limited)
+          assert conn.status == 429
+          body = Jason.decode!(conn.resp_body)
+          assert body["error"] == "too_many_requests"
+          assert body["message"] =~ "Rate limit"
+        end
+      end
+    end
+
+    test "rate limiting is per IP address" do
+      fake_token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
+
+      # Make 5 requests from first IP
+      for _ <- 1..5 do
+        conn =
+          build_conn()
+          |> put_req_header("authorization", "Bearer #{fake_token}")
+          |> ApiAuth.call(%{})
+
+        assert conn.halted
+        assert conn.status == 401
+      end
+
+      # 6th request from same IP should be rate limited
+      conn =
+        build_conn()
+        |> put_req_header("authorization", "Bearer #{fake_token}")
+        |> ApiAuth.call(%{})
+
+      assert conn.halted
+      assert conn.status == 429
+
+      # But request from different IP (simulated by X-Forwarded-For) should work
+      conn =
+        build_conn()
+        |> put_req_header("authorization", "Bearer #{fake_token}")
+        |> put_req_header("x-forwarded-for", "192.168.1.100")
+        |> ApiAuth.call(%{})
+
+      assert conn.halted
+      # Should get 401 (unauthorized), not 429 (rate limited)
+      assert conn.status == 401
+    end
+
+    test "successful authentication does not count toward rate limit" do
+      {:ok, user} =
+        %User{}
+        |> User.email_changeset(%{email: "success-rate@example.com"})
+        |> InventorySync.Repo.insert()
+
+      attrs = %{
+        name: "Success Rate Token",
+        scopes: ["read:products"],
+        user_id: user.id
+      }
+
+      {raw_token, api_token_struct} = ApiToken.build_token(attrs)
+      {:ok, _saved_token} = InventorySync.Repo.insert(api_token_struct)
+
+      # Make many successful requests - none should be rate limited
+      for _ <- 1..10 do
+        conn =
+          build_conn()
+          |> put_req_header("authorization", "Bearer #{raw_token}")
+          |> ApiAuth.call(%{})
+
+        refute conn.halted
+        assert conn.assigns[:api_token] != nil
+      end
+    end
+  end
 end

@@ -15,6 +15,8 @@ defmodule InventorySync.Application do
       {DNSCluster, query: Application.get_env(:inventory_sync, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: InventorySync.PubSub},
       {Registry, keys: :unique, name: InventorySync.ChannelRegistry},
+      # Hammer for rate limiting (uses ETS backend by default)
+      {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]},
       InventorySync.Workers.SyncManager,
       InventorySync.Workers.Bootstrapper,
       # Start a worker by calling: InventorySync.Worker.start_link(arg)

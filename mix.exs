@@ -70,7 +70,8 @@ defmodule InventorySync.MixProject do
       {:bandit, "~> 1.5"},
       {:bypass, "~> 2.1", only: :test},
       {:benchee, "~> 1.0", only: :dev},
-      {:oban, "~> 2.18"}
+      {:oban, "~> 2.18"},
+      {:hammer, "~> 6.2"}
     ]
   end
 
