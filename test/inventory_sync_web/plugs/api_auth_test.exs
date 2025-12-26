@@ -1,5 +1,5 @@
 defmodule InventorySyncWeb.Plugs.ApiAuthTest do
-  use InventorySyncWeb.ConnCase, async: true
+  use InventorySyncWeb.ConnCase, async: false
 
   alias InventorySync.Accounts.ApiToken
   alias InventorySync.Accounts.User
@@ -218,6 +218,13 @@ defmodule InventorySyncWeb.Plugs.ApiAuthTest do
   end
 
   describe "rate limiting" do
+    setup do
+      # Clear any existing rate limit buckets before each test
+      # This ensures tests are isolated
+      Hammer.Backend.ETS.delete_buckets("api_auth:")
+      :ok
+    end
+
     test "allows requests within rate limit" do
       # Create a valid token
       {:ok, user} =
