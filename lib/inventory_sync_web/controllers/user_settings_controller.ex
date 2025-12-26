@@ -5,6 +5,7 @@ defmodule InventorySyncWeb.UserSettingsController do
   alias InventorySyncWeb.UserAuth
 
   import InventorySyncWeb.UserAuth, only: [require_sudo_mode: 2]
+  import Phoenix.Component, only: [to_form: 1]
 
   plug :require_sudo_mode
   plug :assign_email_and_password_changesets
@@ -33,7 +34,7 @@ defmodule InventorySyncWeb.UserSettingsController do
         |> redirect(to: ~p"/users/settings")
 
       changeset ->
-        render(conn, :edit, email_changeset: %{changeset | action: :insert})
+        render(conn, :edit, email_form: to_form(changeset))
     end
   end
 
@@ -49,7 +50,7 @@ defmodule InventorySyncWeb.UserSettingsController do
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
-        render(conn, :edit, password_changeset: changeset)
+        render(conn, :edit, password_form: to_form(changeset))
     end
   end
 
@@ -71,7 +72,7 @@ defmodule InventorySyncWeb.UserSettingsController do
     user = conn.assigns.current_scope.user
 
     conn
-    |> assign(:email_changeset, Accounts.change_user_email(user))
-    |> assign(:password_changeset, Accounts.change_user_password(user))
+    |> assign(:email_form, to_form(Accounts.change_user_email(user)))
+    |> assign(:password_form, to_form(Accounts.change_user_password(user)))
   end
 end

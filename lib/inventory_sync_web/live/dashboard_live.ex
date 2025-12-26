@@ -137,7 +137,10 @@ defmodule InventorySyncWeb.DashboardLive do
           <.icon name={@icon} class="w-6 h-6" />
         </div>
         <div class="dropdown dropdown-end">
-          <button class={["btn btn-ghost btn-xs btn-circle opacity-70 hover:opacity-100", @text_class]}>
+          <button class={[
+            "p-1 rounded-full hover:bg-white/20 transition-colors opacity-70 hover:opacity-100",
+            @text_class
+          ]}>
             <.icon name="hero-ellipsis-horizontal" class="w-5 h-5" />
           </button>
         </div>

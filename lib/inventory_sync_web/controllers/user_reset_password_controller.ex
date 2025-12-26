@@ -3,8 +3,10 @@ defmodule InventorySyncWeb.UserResetPasswordController do
 
   alias InventorySync.Accounts
 
+  import Phoenix.Component, only: [to_form: 1]
+
   def new(conn, _params) do
-    render(conn, :new)
+    render(conn, :new, form: to_form(%{}))
   end
 
   def create(conn, %{"user" => %{"email" => email}}) do

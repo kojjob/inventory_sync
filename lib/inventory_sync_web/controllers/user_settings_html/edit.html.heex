@@ -31,8 +31,7 @@
 
       <div class="p-6">
         <.form
-          :let={f}
-          for={@email_changeset}
+          for={@email_form}
           action={~p"/users/settings"}
           id="update_email"
           class="space-y-5"
@@ -41,7 +40,7 @@
 
           <div>
             <label
-              for={f[:email].id}
+              for={@email_form[:email].id}
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Email address
@@ -51,7 +50,7 @@
                 <.icon name="hero-envelope" class="h-5 w-5 text-gray-400" />
               </div>
               <.input
-                field={f[:email]}
+                field={@email_form[:email]}
                 type="email"
                 autocomplete="email"
                 required
@@ -103,8 +102,7 @@
 
       <div class="p-6">
         <.form
-          :let={f}
-          for={@password_changeset}
+          for={@password_form}
           action={~p"/users/settings"}
           id="update_password"
           class="space-y-5"
@@ -113,7 +111,7 @@
 
           <div>
             <label
-              for={f[:password].id}
+              for={@password_form[:password].id}
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               New password
@@ -123,7 +121,7 @@
                 <.icon name="hero-lock-closed" class="h-5 w-5 text-gray-400" />
               </div>
               <.input
-                field={f[:password]}
+                field={@password_form[:password]}
                 type="password"
                 autocomplete="new-password"
                 required
@@ -138,7 +136,7 @@
 
           <div>
             <label
-              for={f[:password_confirmation].id}
+              for={@password_form[:password_confirmation].id}
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Confirm new password
@@ -148,7 +146,7 @@
                 <.icon name="hero-lock-closed" class="h-5 w-5 text-gray-400" />
               </div>
               <.input
-                field={f[:password_confirmation]}
+                field={@password_form[:password_confirmation]}
                 type="password"
                 autocomplete="new-password"
                 required

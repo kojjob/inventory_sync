@@ -71,7 +71,6 @@
 <!-- Sign In Form -->
         <div id="signin-form" style="display: block;">
           <.form
-            :let={f}
             for={@form}
             as={:user}
             id="login_form"
@@ -83,7 +82,7 @@
               <div class="relative">
                 <.input
                   readonly={!!@current_scope}
-                  field={f[:email]}
+                  field={@form[:email]}
                   type="email"
                   autocomplete="email"
                   required
@@ -101,7 +100,7 @@
             <div>
               <div class="relative">
                 <.input
-                  field={f[:password]}
+                  field={@form[:password]}
                   type="password"
                   autocomplete="current-password"
                   class="block w-full px-4 py-3.5 pr-12 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
@@ -118,7 +117,7 @@
               <label class="flex items-center cursor-pointer group">
                 <input
                   type="checkbox"
-                  name={f[:remember_me].name}
+                  name={@form[:remember_me].name}
                   value="true"
                   class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800 cursor-pointer"
                 />
@@ -137,8 +136,6 @@
 <!-- Login Button -->
             <button
               type="submit"
-              name={f[:remember_me].name}
-              value="true"
               class="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-emerald-500"
             >
               Login

@@ -56,21 +56,20 @@ defmodule InventorySyncWeb.CoreComponents do
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class="toast toast-top toast-end z-50"
+      class="fixed top-4 right-4 z-50 flex flex-col gap-2"
       {@rest}
     >
       <div class={[
-        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
-        @kind == :info && "alert-info",
-        @kind == :error && "alert-error"
+        "flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap transition-all duration-300",
+        @kind == :info && "bg-info/10 text-info border-info/20",
+        @kind == :error && "bg-error/10 text-error border-error/20"
       ]}>
         <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0" />
         <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
-        <div>
+        <div class="flex-1">
           <p :if={@title} class="font-semibold">{@title}</p>
-          <p>{msg}</p>
+          <p class="text-sm">{msg}</p>
         </div>
-        <div class="flex-1" />
         <button type="button" class="group self-start cursor-pointer" aria-label={gettext("close")}>
           <.icon name="hero-x-mark" class="size-5 opacity-40 group-hover:opacity-70" />
         </button>
@@ -94,11 +93,14 @@ defmodule InventorySyncWeb.CoreComponents do
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    variants = %{"primary" => "btn-primary", nil => "btn-primary btn-soft"}
+    variants = %{
+      "primary" => "bg-primary text-primary-content hover:bg-primary/90",
+      nil => "bg-primary/10 text-primary hover:bg-primary/20"
+    }
 
     assigns =
       assign_new(assigns, :class, fn ->
-        ["btn", Map.fetch!(variants, assigns[:variant])]
+        ["inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed", Map.fetch!(variants, assigns[:variant])]
       end)
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
@@ -185,19 +187,23 @@ defmodule InventorySyncWeb.CoreComponents do
       end)
 
     ~H"""
-    <div class="fieldset mb-2">
-      <label>
+    <div class="mb-4">
+      <label class="flex items-center gap-3 cursor-pointer group">
         <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
-        <span class="label">
-          <input
-            type="checkbox"
-            id={@id}
-            name={@name}
-            value="true"
-            checked={@checked}
-            class={@class || "checkbox checkbox-sm"}
-            {@rest}
-          />{@label}
+        <input
+          type="checkbox"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          class={[
+            "size-4 rounded border-base-300 text-primary focus:ring-primary transition-all duration-200",
+            @class
+          ]}
+          {@rest}
+        />
+        <span :if={@label} class="text-sm font-medium text-base-content/80 group-hover:text-base-content">
+          {@label}
         </span>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -207,13 +213,17 @@ defmodule InventorySyncWeb.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
-      <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+    <div class="mb-4">
+      <label class="block">
+        <span :if={@label} class="block text-sm font-medium text-base-content/80 mb-1.5">{@label}</span>
         <select
           id={@id}
           name={@name}
-          class={[@class || "w-full select", @errors != [] && (@error_class || "select-error")]}
+          class={[
+            "block w-full rounded-lg border-base-300 bg-base-100 px-3 py-2 text-sm focus:border-primary focus:ring-primary transition-all duration-200",
+            @errors != [] && "border-error focus:border-error focus:ring-error",
+            @class
+          ]}
           multiple={@multiple}
           {@rest}
         >
@@ -228,15 +238,16 @@ defmodule InventorySyncWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
-      <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+    <div class="mb-4">
+      <label class="block">
+        <span :if={@label} class="block text-sm font-medium text-base-content/80 mb-1.5">{@label}</span>
         <textarea
           id={@id}
           name={@name}
           class={[
-            @class || "w-full textarea",
-            @errors != [] && (@error_class || "textarea-error")
+            "block w-full rounded-lg border-base-300 bg-base-100 px-3 py-2 text-sm focus:border-primary focus:ring-primary transition-all duration-200 min-h-[80px]",
+            @errors != [] && "border-error focus:border-error focus:ring-error",
+            @class
           ]}
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
@@ -249,17 +260,18 @@ defmodule InventorySyncWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div class="fieldset mb-2">
-      <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+    <div class="mb-4">
+      <label class="block">
+        <span :if={@label} class="block text-sm font-medium text-base-content/80 mb-1.5">{@label}</span>
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            @class || "w-full input",
-            @errors != [] && (@error_class || "input-error")
+            "block w-full rounded-lg border-base-300 bg-base-100 px-3 py-2 text-sm focus:border-primary focus:ring-primary transition-all duration-200",
+            @errors != [] && "border-error focus:border-error focus:ring-error",
+            @class
           ]}
           {@rest}
         />
@@ -334,34 +346,42 @@ defmodule InventorySyncWeb.CoreComponents do
       end
 
     ~H"""
-    <table class="table table-zebra">
-      <thead>
-        <tr>
-          <th :for={col <- @col}>{col[:label]}</th>
-          <th :if={@action != []}>
-            <span class="sr-only">{gettext("Actions")}</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-        <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
-          <td
-            :for={col <- @col}
-            phx-click={@row_click && @row_click.(row)}
-            class={@row_click && "hover:cursor-pointer"}
+    <div class="overflow-x-auto rounded-xl border border-base-300 bg-base-100">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-base-300 bg-base-200/50">
+            <th :for={col <- @col} class="px-4 py-3 font-semibold text-base-content/70">
+              {col[:label]}
+            </th>
+            <th :if={@action != []} class="px-4 py-3 font-semibold text-base-content/70">
+              <span class="sr-only">{gettext("Actions")}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
+          <tr
+            :for={row <- @rows}
+            id={@row_id && @row_id.(row)}
+            class="border-b border-base-300 last:border-0 hover:bg-base-200/30 transition-colors duration-150"
           >
-            {render_slot(col, @row_item.(row))}
-          </td>
-          <td :if={@action != []} class="w-0 font-semibold">
-            <div class="flex gap-4">
-              <%= for action <- @action do %>
-                {render_slot(action, @row_item.(row))}
-              <% end %>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td
+              :for={col <- @col}
+              phx-click={@row_click && @row_click.(row)}
+              class={["px-4 py-3", @row_click && "hover:cursor-pointer"]}
+            >
+              {render_slot(col, @row_item.(row))}
+            </td>
+            <td :if={@action != []} class="px-4 py-3 w-0 font-semibold">
+              <div class="flex gap-4">
+                <%= for action <- @action do %>
+                  {render_slot(action, @row_item.(row))}
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     """
   end
 
@@ -381,12 +401,10 @@ defmodule InventorySyncWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <ul class="list">
-      <li :for={item <- @item} class="list-row">
-        <div class="list-col-grow">
-          <div class="font-bold">{item.title}</div>
-          <div>{render_slot(item)}</div>
-        </div>
+    <ul class="divide-y divide-base-300 rounded-xl border border-base-300 bg-base-100 overflow-hidden">
+      <li :for={item <- @item} class="flex flex-col gap-1 px-4 py-3 hover:bg-base-200/30 transition-colors duration-150">
+        <div class="text-xs font-bold text-base-content/50 uppercase tracking-wider">{item.title}</div>
+        <div class="text-sm text-base-content">{render_slot(item)}</div>
       </li>
     </ul>
     """

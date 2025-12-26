@@ -17,6 +17,10 @@ defmodule InventorySyncWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug InventorySyncWeb.Plugs.ApiAuth
+  end
+
   pipeline :shopify_webhooks do
     # VerifyShopifySignature reads raw body, verifies HMAC, and parses JSON
     plug InventorySyncWeb.Plugs.VerifyShopifySignature
@@ -59,9 +63,20 @@ defmodule InventorySyncWeb.Router do
     get "/health/ready", HealthController, :readiness
   end
 
-  # Other scopes may use custom stacks.
-  scope "/api", InventorySyncWeb do
-    pipe_through :api
+  # API v1 - REST API with token authentication
+  scope "/api/v1", InventorySyncWeb.Api.V1, as: :api_v1 do
+    pipe_through [:api, :api_auth]
+
+    resources "/products", ProductController, except: [:new, :edit]
+    resources "/channels", ChannelController, except: [:new, :edit]
+
+    # Inventory operations
+    get "/inventory", InventoryController, :index
+    put "/inventory/:sku", InventoryController, :update
+
+    # Reservations (Phase 2 prerequisite)
+    post "/reservations", ReservationController, :create
+    delete "/reservations/:id", ReservationController, :release
   end
 
   # Shopify webhook endpoint with signature verification
