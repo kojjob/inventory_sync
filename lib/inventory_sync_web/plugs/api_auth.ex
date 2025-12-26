@@ -168,21 +168,43 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
   # Gets the client IP address from the connection
   defp get_client_ip(conn) do
     # Check for X-Forwarded-For header (when behind proxy/load balancer)
+    # Use the rightmost IP (closest to server) which is more trustworthy
     case get_req_header(conn, "x-forwarded-for") do
       [ip_string | _] ->
-        # Take the first IP if there are multiple
         ip_string
         |> String.split(",")
-        |> List.first()
+        |> List.last()  # Use rightmost IP instead of first
         |> String.trim()
+        |> sanitize_ip()
 
       [] ->
         # Fall back to remote_ip from the connection
         conn.remote_ip
         |> :inet.ntoa()
         |> to_string()
+        |> sanitize_ip()
     end
   end
+
+  # Sanitizes IP address to prevent injection attacks
+  # Returns a safe string suitable for use in bucket keys
+  defp sanitize_ip(ip_string) when is_binary(ip_string) do
+    # Only allow valid IPv4 and IPv6 characters
+    # This prevents special characters that could interfere with rate limiting
+    case :inet.parse_address(String.to_charlist(ip_string)) do
+      {:ok, _parsed_ip} ->
+        # Valid IP address, safe to use
+        ip_string
+      
+      {:error, _} ->
+        # Invalid IP, use a safe fallback
+        # Hash it to create a consistent identifier
+        :crypto.hash(:sha256, ip_string)
+        |> Base.encode16(case: :lower)
+    end
+  end
+
+  defp sanitize_ip(ip_string), do: "unknown"
 
   # Checks if the IP address has exceeded the rate limit (without incrementing)
   defp check_if_rate_limited(client_ip) do
@@ -206,9 +228,22 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
   # Records a failed authentication attempt
   defp record_failed_attempt(client_ip) do
     bucket_key = "api_auth:#{client_ip}"
-    # This will increment the counter for failed attempts
-    Hammer.check_rate(bucket_key, @rate_limit_scale, @rate_limit_limit)
-    :ok
+    
+    # Increment the counter for failed attempts
+    case Hammer.check_rate(bucket_key, @rate_limit_scale, @rate_limit_limit) do
+      {:allow, _count} ->
+        :ok
+      
+      {:deny, _limit} ->
+        # Already at limit, but that's fine - we're just recording
+        :ok
+      
+      {:error, reason} ->
+        # Log error but don't fail the request
+        require Logger
+        Logger.warning("Failed to record rate limit attempt for #{client_ip}: #{inspect(reason)}")
+        :ok
+    end
   end
 
   # Returns a 429 Too Many Requests response
