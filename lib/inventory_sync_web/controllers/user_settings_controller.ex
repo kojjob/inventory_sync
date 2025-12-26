@@ -34,6 +34,8 @@ defmodule InventorySyncWeb.UserSettingsController do
         |> redirect(to: ~p"/users/settings")
 
       changeset ->
+        # Set action so Phoenix.Component.used_input?/1 returns true and errors display
+        changeset = Map.put(changeset, :action, :validate)
         render(conn, :edit, email_form: to_form(changeset))
     end
   end

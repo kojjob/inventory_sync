@@ -33,6 +33,23 @@ defmodule InventorySyncWeb.Api.V1.ErrorJSON do
     %{error: message}
   end
 
+  @doc """
+  Renders a bad request error with message.
+  """
+  def bad_request(%{message: message}) do
+    %{error: "bad_request", message: message}
+  end
+
+  @doc """
+  Renders a not implemented error for stub endpoints.
+  """
+  def not_implemented(_assigns) do
+    %{
+      error: "not_implemented",
+      message: "This feature is not yet implemented. Coming soon in Phase 2."
+    }
+  end
+
   # Translates changeset errors to a map of field => [error_messages]
   defp translate_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->

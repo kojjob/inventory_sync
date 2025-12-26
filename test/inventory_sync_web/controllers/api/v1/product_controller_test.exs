@@ -61,8 +61,11 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
   describe "index" do
     test "lists all products when authenticated", %{token: token} do
       # Create some products
-      {:ok, product1} = Inventory.create_product(%{sku: "SKU-001", name: "Product 1", total_quantity: 100})
-      {:ok, product2} = Inventory.create_product(%{sku: "SKU-002", name: "Product 2", total_quantity: 200})
+      {:ok, product1} =
+        Inventory.create_product(%{sku: "SKU-001", name: "Product 1", total_quantity: 100})
+
+      {:ok, product2} =
+        Inventory.create_product(%{sku: "SKU-002", name: "Product 2", total_quantity: 200})
 
       conn =
         build_conn()
@@ -89,7 +92,8 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
 
   describe "show" do
     test "returns product when it exists", %{token: token} do
-      {:ok, product} = Inventory.create_product(%{sku: "SKU-001", name: "Test Product", total_quantity: 50})
+      {:ok, product} =
+        Inventory.create_product(%{sku: "SKU-001", name: "Test Product", total_quantity: 50})
 
       conn =
         build_conn()
@@ -169,7 +173,8 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
 
   describe "update" do
     test "updates product with valid data", %{token: token} do
-      {:ok, product} = Inventory.create_product(%{sku: "SKU-001", name: "Original", total_quantity: 50})
+      {:ok, product} =
+        Inventory.create_product(%{sku: "SKU-001", name: "Original", total_quantity: 50})
 
       update_params = %{
         name: "Updated Product",
@@ -201,7 +206,8 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
     end
 
     test "returns 422 with invalid data", %{token: token} do
-      {:ok, product} = Inventory.create_product(%{sku: "SKU-001", name: "Original", total_quantity: 50})
+      {:ok, product} =
+        Inventory.create_product(%{sku: "SKU-001", name: "Original", total_quantity: 50})
 
       update_params = %{sku: ""}
 
@@ -215,7 +221,8 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
     end
 
     test "returns 403 when token lacks write scope", %{read_only_token: token} do
-      {:ok, product} = Inventory.create_product(%{sku: "SKU-001", name: "Original", total_quantity: 50})
+      {:ok, product} =
+        Inventory.create_product(%{sku: "SKU-001", name: "Original", total_quantity: 50})
 
       update_params = %{name: "Updated"}
 
@@ -231,7 +238,8 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
 
   describe "delete" do
     test "deletes product successfully", %{token: token} do
-      {:ok, product} = Inventory.create_product(%{sku: "SKU-001", name: "To Delete", total_quantity: 50})
+      {:ok, product} =
+        Inventory.create_product(%{sku: "SKU-001", name: "To Delete", total_quantity: 50})
 
       conn =
         build_conn()
@@ -254,7 +262,8 @@ defmodule InventorySyncWeb.Api.V1.ProductControllerTest do
     end
 
     test "returns 403 when token lacks write scope", %{read_only_token: token} do
-      {:ok, product} = Inventory.create_product(%{sku: "SKU-001", name: "To Delete", total_quantity: 50})
+      {:ok, product} =
+        Inventory.create_product(%{sku: "SKU-001", name: "To Delete", total_quantity: 50})
 
       conn =
         build_conn()

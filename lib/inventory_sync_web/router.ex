@@ -31,7 +31,8 @@ defmodule InventorySyncWeb.Router do
     pipe_through [:browser]
 
     live_session :public,
-      root_layout: {InventorySyncWeb.Layouts, :public} do
+      layout: {InventorySyncWeb.Layouts, :public},
+      on_mount: InventorySyncWeb.NavHook do
       live "/", LandingLive, :index
     end
   end

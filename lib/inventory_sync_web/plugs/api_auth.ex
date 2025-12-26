@@ -71,19 +71,19 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
         unauthorized(conn, "Authorization header is missing")
 
       {:error, :invalid_format} ->
-        unauthorized(conn, "Authorization header must use Bearer scheme")
+        unauthorized(conn, "Authorization header must use Bearer token format")
 
       {:error, :invalid_token} ->
-        unauthorized(conn, "Token is invalid")
+        unauthorized(conn, "API token is invalid")
 
       {:error, :not_found} ->
-        unauthorized(conn, "Token not found")
+        unauthorized(conn, "API token is invalid or does not exist")
 
       {:error, :token_expired} ->
-        unauthorized(conn, "Token has expired")
+        unauthorized(conn, "API token has expired")
 
       {:error, :insufficient_scope} ->
-        forbidden(conn, "Token lacks required scope")
+        forbidden(conn, "Token does not have the required scope")
     end
   end
 

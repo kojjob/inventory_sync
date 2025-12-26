@@ -474,28 +474,3 @@ section {
 .dropdown-end .dropdown-content {
   right: 0;
 }
-  background: linear-gradient(135deg, #10b981, #14b8a6, #06b6d4, #10b981);
-  border-radius: inherit;
-  z-index: -1;
-  background-size: 300% 300%;
-  animation: gradient-shift 4s ease infinite;
-}
-
-/* Testimonial card glow */
-.testimonial-glow {
-  position: relative;
-}
-
-.testimonial-glow::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.testimonial-glow:hover::after {
-  opacity: 1;
-}

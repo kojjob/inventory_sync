@@ -57,10 +57,12 @@ defmodule InventorySync.Accounts.ApiTokenTest do
     end
 
     test "validates scope format" do
-      changeset = ApiToken.changeset(%ApiToken{}, %{
-        name: "Test",
-        scopes: ["invalid_scope"]
-      })
+      changeset =
+        ApiToken.changeset(%ApiToken{}, %{
+          name: "Test",
+          scopes: ["invalid_scope"]
+        })
+
       assert %{scopes: ["invalid scope format: invalid_scope"]} = errors_on(changeset)
     end
 
@@ -75,19 +77,22 @@ defmodule InventorySync.Accounts.ApiTokenTest do
         "admin:all"
       ]
 
-      changeset = ApiToken.changeset(%ApiToken{}, %{
-        name: "Test",
-        scopes: valid_scopes
-      })
+      changeset =
+        ApiToken.changeset(%ApiToken{}, %{
+          name: "Test",
+          scopes: valid_scopes
+        })
 
       refute Map.has_key?(errors_on(changeset), :scopes)
     end
 
     test "validates name length" do
-      changeset = ApiToken.changeset(%ApiToken{}, %{
-        name: String.duplicate("a", 256),
-        scopes: ["read:products"]
-      })
+      changeset =
+        ApiToken.changeset(%ApiToken{}, %{
+          name: String.duplicate("a", 256),
+          scopes: ["read:products"]
+        })
+
       assert %{name: ["should be at most 255 character(s)"]} = errors_on(changeset)
     end
   end
@@ -149,11 +154,13 @@ defmodule InventorySync.Accounts.ApiTokenTest do
       # Should expire approximately 90 days from now
       expected_expiry = DateTime.utc_now() |> DateTime.add(90, :day)
       diff = DateTime.diff(api_token_struct.expires_at, expected_expiry, :second)
-      assert abs(diff) < 5  # Within 5 seconds tolerance
+      # Within 5 seconds tolerance
+      assert abs(diff) < 5
     end
 
     test "allows custom expiration", %{user: user} do
       custom_expiry = DateTime.utc_now() |> DateTime.add(30, :day)
+
       attrs = %{
         name: "Test Token",
         scopes: ["read:products"],
@@ -207,6 +214,7 @@ defmodule InventorySync.Accounts.ApiTokenTest do
     test "returns error for expired token", %{user: user} do
       # Create token that expired yesterday
       expired_at = DateTime.utc_now() |> DateTime.add(-1, :day)
+
       attrs = %{
         name: "Expired Token",
         scopes: ["read:products"],

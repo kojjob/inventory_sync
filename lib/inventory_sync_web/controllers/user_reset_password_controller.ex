@@ -31,7 +31,7 @@ defmodule InventorySyncWeb.UserResetPasswordController do
       conn
       |> assign(:user, user)
       |> assign(:token, token)
-      |> render(:edit, changeset: Accounts.change_user_password(user))
+      |> render(:edit, form: to_form(Accounts.change_user_password(user)))
     else
       conn
       |> put_flash(:error, "Reset password link is invalid or it has expired.")
@@ -53,7 +53,7 @@ defmodule InventorySyncWeb.UserResetPasswordController do
           conn
           |> assign(:user, user)
           |> assign(:token, token)
-          |> render(:edit, changeset: changeset)
+          |> render(:edit, form: to_form(changeset))
       end
     else
       conn

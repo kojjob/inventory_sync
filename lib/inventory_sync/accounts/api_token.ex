@@ -168,7 +168,9 @@ defmodule InventorySync.Accounts.ApiToken do
           # Update last_used_at
           {:ok, updated_token} =
             token
-            |> Ecto.Changeset.change(%{last_used_at: DateTime.utc_now() |> DateTime.truncate(:second)})
+            |> Ecto.Changeset.change(%{
+              last_used_at: DateTime.utc_now() |> DateTime.truncate(:second)
+            })
             |> Repo.update()
 
           {:ok, updated_token}
