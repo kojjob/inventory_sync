@@ -9,7 +9,10 @@ A real-time, multi-channel inventory synchronization platform built with Elixir 
 - **Reliable Webhook Ingestion**: Securely handles incoming webhooks with HMAC signature verification.
 - **Fault Tolerance**: Predictive retry logic with exponential backoff for API failures.
 - **Async Processing**: Background job processing using Oban for high-throughput webhook handling.
-- **Security First**: Sensitive credentials are encrypted at rest using AES-GCM via Cloak.Ecto.
+- **Security First**: 
+  - Sensitive credentials encrypted at rest using AES-GCM via Cloak.Ecto
+  - API tokens protected with rate limiting (5 failed attempts/IP/minute)
+  - SHA256 token hashing for secure authentication
 - **Modern UI**: Polished dashboard and management interface built with Phoenix LiveView and Tailwind CSS v4.
 
 ## 🛠️ Tech Stack

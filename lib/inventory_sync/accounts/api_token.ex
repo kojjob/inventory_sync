@@ -5,6 +5,13 @@ defmodule InventorySync.Accounts.ApiToken do
   API tokens allow programmatic access to the REST API with scoped permissions.
   Tokens are stored as SHA256 hashes - the raw token is only shown once at creation.
 
+  ## Security
+
+  - Tokens are hashed using SHA256 before storage
+  - Rate limiting (5 failed attempts per IP per minute) protects against timing attacks
+  - Tokens can be scoped to limit access to specific resources
+  - Tokens can have expiration dates
+
   ## Scopes
 
   Tokens can have the following scopes:
