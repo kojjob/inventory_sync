@@ -22,7 +22,7 @@ defmodule InventorySyncWeb.ChannelLive.Index do
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Channels</h2>
         <button
           phx-click="new-channel"
-          class="btn btn-primary bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors font-medium shadow-sm"
         >
           Add Channel
         </button>

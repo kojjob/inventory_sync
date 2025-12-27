@@ -5,33 +5,31 @@ defmodule InventorySync.Inventory.ChannelEncryptionTest do
 
   describe "credential encryption" do
     test "encrypts and decrypts credentials correctly" do
-      # Create credentials as JSON string (Cloak.Ecto.Binary casts to string)
-      credentials_json =
-        Jason.encode!(%{
-          "api_key" => "test_secret_key_12345",
-          "shop_url" => "test-shop.myshopify.com"
-        })
+      # Create credentials as map (Encrypted.Map handles JSON serialization internally)
+      credentials = %{
+        "api_key" => "test_secret_key_12345",
+        "shop_url" => "test-shop.myshopify.com"
+      }
 
       # Create a channel with encrypted credentials
       {:ok, channel} =
         Inventory.create_channel(%{
           name: "Test Encrypted Channel",
           platform: :shopify,
-          credentials: credentials_json
+          credentials: credentials
         })
 
       assert channel.id
-      assert channel.credentials == credentials_json
+      assert channel.credentials == credentials
 
       # Fetch from database to verify encryption/decryption round-trip
       fetched_channel = Inventory.get_channel!(channel.id)
 
-      assert fetched_channel.credentials == credentials_json
+      assert fetched_channel.credentials == credentials
 
-      # Verify we can decode the credentials
-      decoded = Jason.decode!(fetched_channel.credentials)
-      assert decoded["api_key"] == "test_secret_key_12345"
-      assert decoded["shop_url"] == "test-shop.myshopify.com"
+      # Verify we can access the credentials directly as a map
+      assert fetched_channel.credentials["api_key"] == "test_secret_key_12345"
+      assert fetched_channel.credentials["shop_url"] == "test-shop.myshopify.com"
     end
 
     test "handles nil credentials" do
@@ -49,13 +47,13 @@ defmodule InventorySync.Inventory.ChannelEncryptionTest do
     end
 
     test "credentials are actually encrypted in database" do
-      credentials_json = Jason.encode!(%{"api_key" => "secret123"})
+      credentials = %{"api_key" => "secret123"}
 
       {:ok, channel} =
         Inventory.create_channel(%{
           name: "Test Channel",
           platform: :shopify,
-          credentials: credentials_json
+          credentials: credentials
         })
 
       # Query raw database to verify encryption

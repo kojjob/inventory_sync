@@ -25,11 +25,11 @@
 <!-- Main Card -->
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-emerald-500/5">
       <div class="p-8">
-        <.form :let={f} for={%{}} as={:user} action={~p"/users/reset-password"} class="space-y-5">
+        <.form for={@form} as={:user} action={~p"/users/reset-password"} class="space-y-5">
           <!-- Email Field -->
           <div>
             <label
-              for={f[:email].id}
+              for={@form[:email].id}
               class="block text-sm font-medium text-slate-300 mb-2"
             >
               Email address
@@ -39,7 +39,7 @@
                 <.icon name="hero-envelope" class="h-5 w-5 text-slate-400" />
               </div>
               <.input
-                field={f[:email]}
+                field={@form[:email]}
                 type="email"
                 autocomplete="email"
                 required

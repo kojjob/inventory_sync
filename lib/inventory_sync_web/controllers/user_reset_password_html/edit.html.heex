@@ -26,15 +26,14 @@
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-emerald-500/5">
       <div class="p-8">
         <.form
-          :let={f}
-          for={@changeset}
+          for={@form}
           action={~p"/users/reset-password/#{@token}"}
           class="space-y-5"
         >
           <!-- Password Field -->
           <div>
             <label
-              for={f[:password].id}
+              for={@form[:password].id}
               class="block text-sm font-medium text-slate-300 mb-2"
             >
               New password
@@ -44,7 +43,7 @@
                 <.icon name="hero-lock-closed" class="h-5 w-5 text-slate-400" />
               </div>
               <.input
-                field={f[:password]}
+                field={@form[:password]}
                 type="password"
                 autocomplete="new-password"
                 required
@@ -61,7 +60,7 @@
 <!-- Password Confirmation Field -->
           <div>
             <label
-              for={f[:password_confirmation].id}
+              for={@form[:password_confirmation].id}
               class="block text-sm font-medium text-slate-300 mb-2"
             >
               Confirm new password
@@ -71,7 +70,7 @@
                 <.icon name="hero-lock-closed" class="h-5 w-5 text-slate-400" />
               </div>
               <.input
-                field={f[:password_confirmation]}
+                field={@form[:password_confirmation]}
                 type="password"
                 autocomplete="new-password"
                 required

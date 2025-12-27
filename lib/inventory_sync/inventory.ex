@@ -212,6 +212,22 @@ defmodule InventorySync.Inventory do
   def get_product!(id), do: Repo.get!(Product, id)
 
   @doc """
+  Gets a single product by SKU.
+
+  Returns `nil` if the Product does not exist.
+
+  ## Examples
+
+      iex> get_product_by_sku("ABC-123")
+      %Product{}
+
+      iex> get_product_by_sku("NONEXISTENT")
+      nil
+
+  """
+  def get_product_by_sku(sku), do: Repo.get_by(Product, sku: sku)
+
+  @doc """
   Creates a product.
 
   ## Examples
