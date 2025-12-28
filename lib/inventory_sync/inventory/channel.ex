@@ -5,7 +5,7 @@ defmodule InventorySync.Inventory.Channel do
   schema "channels" do
     field :name, :string
     field :platform, Ecto.Enum, values: [:shopify, :amazon, :etsy, :ebay]
-    field :credentials, InventorySync.Encrypted.Binary
+    field :credentials, InventorySync.Encrypted.Map
     field :active, :boolean, default: false
 
     has_many :inventory_items, InventorySync.Inventory.InventoryItem

@@ -3,8 +3,10 @@ defmodule InventorySyncWeb.UserResetPasswordController do
 
   alias InventorySync.Accounts
 
+  import Phoenix.Component, only: [to_form: 1]
+
   def new(conn, _params) do
-    render(conn, :new)
+    render(conn, :new, form: to_form(%{}))
   end
 
   def create(conn, %{"user" => %{"email" => email}}) do
@@ -29,7 +31,7 @@ defmodule InventorySyncWeb.UserResetPasswordController do
       conn
       |> assign(:user, user)
       |> assign(:token, token)
-      |> render(:edit, changeset: Accounts.change_user_password(user))
+      |> render(:edit, form: to_form(Accounts.change_user_password(user)))
     else
       conn
       |> put_flash(:error, "Reset password link is invalid or it has expired.")
@@ -51,7 +53,7 @@ defmodule InventorySyncWeb.UserResetPasswordController do
           conn
           |> assign(:user, user)
           |> assign(:token, token)
-          |> render(:edit, changeset: changeset)
+          |> render(:edit, form: to_form(changeset))
       end
     else
       conn
