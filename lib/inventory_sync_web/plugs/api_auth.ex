@@ -74,7 +74,7 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
   """
   def call(conn, opts) do
     client_ip = get_client_ip(conn)
-    
+
     # First, check if this IP has exceeded rate limits
     case check_if_rate_limited(client_ip) do
       :ok ->
@@ -83,13 +83,13 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
           {:ok, conn} ->
             # Success - don't increment rate limit counter
             conn
-          
+
           {:error, conn} ->
             # Failed - increment rate limit counter
             record_failed_attempt(client_ip)
             conn
         end
-      
+
       :rate_limited ->
         rate_limited(conn)
     end
@@ -104,26 +104,26 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
         conn
         |> assign(:api_token, api_token)
         |> assign(:current_user, api_token.user)
-      
+
       {:ok, conn}
     else
       {:error, :missing_token} ->
         {:error, unauthorized(conn, "Authorization header is missing")}
 
       {:error, :invalid_format} ->
-        {:error, unauthorized(conn, "Authorization header must use Bearer scheme")}
+        {:error, unauthorized(conn, "Authorization header must use Bearer token format")}
 
       {:error, :invalid_token} ->
-        {:error, unauthorized(conn, "Token is invalid")}
+        {:error, unauthorized(conn, "API token is invalid")}
 
       {:error, :not_found} ->
-        {:error, unauthorized(conn, "Token not found")}
+        {:error, unauthorized(conn, "API token is invalid or does not exist")}
 
       {:error, :token_expired} ->
-        {:error, unauthorized(conn, "Token has expired")}
+        {:error, unauthorized(conn, "API token has expired")}
 
       {:error, :insufficient_scope} ->
-        {:error, forbidden(conn, "Token lacks required scope")}
+        {:error, forbidden(conn, "Token does not have the required scope")}
     end
   end
 
@@ -195,7 +195,7 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
       {:ok, _parsed_ip} ->
         # Valid IP address, safe to use
         ip_string
-      
+
       {:error, _} ->
         # Invalid IP, use a safe fallback
         # Hash it to create a consistent identifier
@@ -204,12 +204,12 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
     end
   end
 
-  defp sanitize_ip(ip_string), do: "unknown"
+  defp sanitize_ip(_ip_string), do: "unknown"
 
   # Checks if the IP address has exceeded the rate limit (without incrementing)
   defp check_if_rate_limited(client_ip) do
     bucket_key = "api_auth:#{client_ip}"
-    
+
     # Use inspect_bucket to check current count without incrementing
     case Hammer.inspect_bucket(bucket_key, @rate_limit_scale, @rate_limit_limit) do
       {:ok, {count, _count_remaining, _ms_to_next_bucket, _created_at, _updated_at}} ->
@@ -218,7 +218,7 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
         else
           :ok
         end
-      
+
       # If bucket doesn't exist yet, allow the request
       {:error, _} ->
         :ok
@@ -228,16 +228,16 @@ defmodule InventorySyncWeb.Plugs.ApiAuth do
   # Records a failed authentication attempt
   defp record_failed_attempt(client_ip) do
     bucket_key = "api_auth:#{client_ip}"
-    
+
     # Increment the counter for failed attempts
     case Hammer.check_rate(bucket_key, @rate_limit_scale, @rate_limit_limit) do
       {:allow, _count} ->
         :ok
-      
+
       {:deny, _limit} ->
         # Already at limit, but that's fine - we're just recording
         :ok
-      
+
       {:error, reason} ->
         # Log error but don't fail the request
         require Logger
